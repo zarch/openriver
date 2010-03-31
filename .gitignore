@@ -7,6 +7,8 @@
 *.pyc
 *.e4p
 *.so
+*.oro
+*.out
 
 # Can also ignore all directories and files in a directory.
 #tmp/**/*
