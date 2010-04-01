@@ -82,7 +82,7 @@ REAL      (kind=rk), ALLOCATABLE ::rks                 (:,:)
 REAL      (kind=rk), ALLOCATABLE ::zargr               (:)
 REAL      (kind=rk), ALLOCATABLE ::zargl               (:)
 REAL      (kind=rk), ALLOCATABLE ::dx                  (:)
-REAL      (kind=rk), ALLOCATABLE ::ksort               (:,:)
+INTEGER (kind=ik), ALLOCATABLE ::ksort               (:,:)
 REAL      (kind=rk), ALLOCATABLE ::etai                (:,:)
 REAL      (kind=rk), ALLOCATABLE ::sigm                (:,:)
 REAL      (kind=rk), ALLOCATABLE ::omi                 (:,:)
@@ -1325,8 +1325,8 @@ SUBROUTINE wafstate
 USE comuni
 IMPLICIT NONE
 
-INTEGER   (kind=ik) :: i,j,K
-REAL      (kind=rk) :: dtodx,deltax,iupw
+INTEGER   (kind=ik) :: i,j,K,iupw
+REAL      (kind=rk) :: dtodx,deltax
 REAL      (kind=rk) :: DL,DR,UL,UR,CL,CR,TL,TR
 REAL      (kind=rk) :: SL,SR,DLOC,DUPW
 REAL      (kind=rk) :: WL,WR,WM
@@ -1487,8 +1487,8 @@ ciclo_j:DO j = 1,nsezi-1
 
       !C si modifica le piccole discontinuità
 
-         IF(ABS(DUPW).LT.TOLLIM)DUPW = TOLLIM*SIGN(1.0,DUPW)
-         IF(ABS(DLOC).LT.TOLLIM)DLOC = TOLLIM*SIGN(1.0,DLOC)
+         IF(ABS(DUPW).LT.TOLLIM)DUPW = TOLLIM*SIGN(1.0d0,DUPW)
+         IF(ABS(DLOC).LT.TOLLIM)DLOC = TOLLIM*SIGN(1.0d0,DLOC)
 
       !C Calcolo RATIO di upwind per le discontinuità locali
 
@@ -1523,7 +1523,7 @@ ciclo_j:DO j = 1,nsezi-1
       END if
 
 
-      WAFLIM(K) = WAFLIM(K)*SIGN(1.0, CN(K))
+      WAFLIM(K) = WAFLIM(K)*SIGN(1.0d0, CN(K))
 
       
    ENDDO ciclo_k
@@ -1563,9 +1563,9 @@ SUBROUTINE wafflu
 USE comuni
 IMPLICIT NONE
 
-INTEGER (kind=ik) :: i,j,K
+INTEGER (kind=ik) :: i,j,K,iupw
 REAL (kind=rk) :: di, bi, beta, dbd, betaj, betap
-REAL (kind=rk) :: dtodx,deltax,iupw, V, sf
+REAL (kind=rk) :: dtodx,deltax, V, sf
 REAL (kind=rk) :: DL,DR,UL,UR,CL,CR,TL,TR
 REAL (kind=rk) :: SL,SR,DLOC,DUPW
 REAL (kind=rk) :: WL,WR,WM
@@ -1739,8 +1739,8 @@ DUPW = WJ(K,j+IUPW)
 
 !C si modifica le piccole discontinuità
 
-IF(ABS(DUPW).LT.TOLLIM)DUPW = TOLLIM*SIGN(1.0,DUPW)
-IF(ABS(DLOC).LT.TOLLIM)DLOC = TOLLIM*SIGN(1.0,DLOC)
+IF(ABS(DUPW).LT.TOLLIM)DUPW = TOLLIM*SIGN(1.0d0,DUPW)
+IF(ABS(DLOC).LT.TOLLIM)DLOC = TOLLIM*SIGN(1.0d0,DLOC)
 
 !C Calcolo RATIO di upwind per le discontinuità locali
 
@@ -1779,7 +1779,7 @@ END if
 !END if
 
 
-WAFLIM(K) = WAFLIM(K)*SIGN(1.0, CN(K))
+WAFLIM(K) = WAFLIM(K)*SIGN(1.0d0, CN(K))
 !write(*,*)  WAFLIM(k), 'LIMITATORE'
 
 ENDDO ciclo_k
