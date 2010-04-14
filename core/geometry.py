@@ -27,12 +27,13 @@ class Section:
     sect.addSegment(sect.yzcoord[0:2], 35)
     sect.addSegment(sect.yzcoord[2:], 40)
     """
-    def __init__(self, xaxis=None,
+    def __init__(self, name=None, xaxis=None,
         yzcoord=None, erodible=True,
         roughness=None, discontinuity=False,
         subsection=False):
+        self.name = name
         self.xaxis = xaxis
-        self.coord = yzcoord
+        self.coord = np.array(yzcoord)
         minimum = self.coord[1].argmin()
         self.min = minimum
         self.erodible = erodible
@@ -40,6 +41,9 @@ class Section:
         self.discontinuity = discontinuity
         self.subsection = subsection
         self.segment = []
+
+    def __str__(self):
+        return str(self.name)
 
     def addSegment(self, yzcoordSegm=None,
             roughness=None):
