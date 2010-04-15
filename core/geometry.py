@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+import re
 
 # section example
 sec_rectangular=[(0, 0), (0, -2), (10, -2), (10, 0)]
@@ -16,7 +17,7 @@ print rect,  rect2
 import csv
 
 class Section:
-    """
+    """            print m.group('sez_name')
     It defines attributes and methods for a river cross-section.
     It's possible to define sub-segments of the section,
     each one with a different roughness.
@@ -175,6 +176,15 @@ class Reach:
         self.lenght = lenght
         self.sections = []
 
+    def __str__(self):
+        slist = []
+        for s in self.sections:
+            separetor = '='*50
+            sectname = s.name + ': ' + str(len(s.coord))
+            coord = str(s.coord)
+            slist.append("\n".join([separetor, sectname, coord]))
+        return "\n".join(slist)
+
     def addSection(self, section=None):
         self.sections.append(section)
 
@@ -189,6 +199,62 @@ class Reach:
         nsegments = datalist[1][1]
         print("ok")
 
+    def importFileORI(self, sectionfilename, pointsfilename):
+        """section.ori
+        -------------------------
+        301
+        4  sez0001
+        1  100.00000   4  100.00000
+        4  sez0002
+        1  100.00000   4  100.00000
+        4  sez0003
+        1  100.00000   4  100.00000
+
+        points.ori
+        -------------------------
+        0.00000  10.00000 100.00000 100.00000
+        0.00000  10.00000   0.00000 100.00000
+        0.00000  50.00000   0.00000 100.00000
+        0.00000  50.00000 100.00000 100.00000
+        5.00000  10.00000 100.00000 100.00000
+        5.00000  10.00000   0.00000 100.00000
+        5.00000  50.00000   0.00000 100.00000
+        5.00000  50.00000 100.00000 100.00000
+
+        >>> river = Reach()
+        >>> river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
+        >>> len(river.sections)
+        301
+
+        """
+        sectionFile = open(sectionfilename, "r")
+        pointsFile = open(pointsfilename, "r")
+        # define regexp
+        restr = r"""^\s*(?P<points_num>\d+)\s+(?P<sez_name>[sez]+\d+)\s*\n^\s*(?P<first_point>\d+)\s+(?P<first_point_h>[0-9.]+)\s+(?P<last_point>\d+)\s+(?P<last_point_h>[0-9.]+)\s*\n"""
+        regexp = re.compile(restr, re.MULTILINE)
+        # find all section informations
+        matches = [m.groupdict() for m in regexp.finditer(sectionFile.read())]
+        # take all data from points.ori
+        allcoord = []
+        for row in pointsFile:
+            allcoord.append([float(x) for x in row.split()])
+        # make the list of sections
+        sectionlist = []
+        first = 0
+        last = 0
+        for m in matches:
+            # make a Section obj
+            #print 'Numero punti sezione: %s\nSezione: %s\nPrimoPunto: %s\nPrimoPuntoH: %s\nUltimoPunto: %s\nUltimoPuntoH: %s\n' % (m['points_num'], m['sez_name'], m['first_point'],m['first_point_h'], m['last_point'],m['last_point_h'])
+            first += int(m['first_point']) - 1
+            last +=  int(m['last_point'])
+            sectionlist.append(Section(name = m['sez_name'], yzcoord = allcoord[first:last]))
+#            print m['sez_name'], first, last
+#            print allcoord[first:last]
+#            print '='*40
+            first = last
+        # define sections attribute
+        self.sections = sectionlist
+        return
 
 
 if __name__ == "__main__":
