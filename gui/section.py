@@ -57,21 +57,12 @@ class Main(QtGui.QMainWindow):
 
 
 def main():
-    # Define coordinate list
-    sezdata=[[0.000, 0.930,  7.190, 12.590, 18.080, 18.910, 20.070],
-[747.27000, 742.79000, 742.77000, 742.75000, 742.73000, 742.73000, 747.28000]]
-    # create different section
-    sez0 = geo.Section(name = 'sez0', yzcoord=sezdata)
-    sez1 = geo.Section(name = 'sez1', yzcoord=sezdata)
-    sez2 = geo.Section(name = 'sez2', yzcoord=sezdata)
-    sez3 = geo.Section(name = 'sez3', yzcoord=sezdata)
-    sez4 = geo.Section(name = 'sez4', yzcoord=sezdata)
-    print sez0, sez1, sez2, sez3, sez4
-    # create a list of section
-    sezlist = [sez0, sez1, sez2, sez3, sez4,]
+    # import a reach for test
+    river = geo.Reach()
+    river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
 
     app = QtGui.QApplication(sys.argv)
-    window=Main(sezlist)
+    window=Main(river.sections)
     window.show()
     # It's exec_ because exec is a reserved word in Python
     sys.exit(app.exec_())
