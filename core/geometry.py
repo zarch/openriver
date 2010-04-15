@@ -172,9 +172,9 @@ class Reach:
     It is composed by sections and sections can be subdivided in
     segments.
     """
-    def __init__(self, lenght=None):
-        self.lenght = lenght
-        self.sections = []
+    def __init__(self,  sections = []):
+        self.sections = sections
+        #self.lenght = self.sections[-1].coord[0]-self.sections[0].coord[0] if self.sections else None
 
     def __str__(self):
         slist = []
@@ -184,9 +184,6 @@ class Reach:
             coord = str(s.coord)
             slist.append("\n".join([separetor, sectname, coord]))
         return "\n".join(slist)
-
-    def addSection(self, section=None):
-        self.sections.append(section)
 
     def importFile(self, filename):
         datalist = []
@@ -229,15 +226,19 @@ class Reach:
         """
         sectionFile = open(sectionfilename, "r")
         pointsFile = open(pointsfilename, "r")
+
         # define regexp
         restr = r"""^\s*(?P<points_num>\d+)\s+(?P<sez_name>[sez]+\d+)\s*\n^\s*(?P<first_point>\d+)\s+(?P<first_point_h>[0-9.]+)\s+(?P<last_point>\d+)\s+(?P<last_point_h>[0-9.]+)\s*\n"""
         regexp = re.compile(restr, re.MULTILINE)
+
         # find all section informations
         matches = [m.groupdict() for m in regexp.finditer(sectionFile.read())]
+
         # take all data from points.ori
         allcoord = []
         for row in pointsFile:
             allcoord.append([float(x) for x in row.split()])
+
         # make the list of sections
         sectionlist = []
         first = 0
@@ -248,13 +249,65 @@ class Reach:
             first += int(m['first_point']) - 1
             last +=  int(m['last_point'])
             sectionlist.append(Section(name = m['sez_name'], yzcoord = allcoord[first:last]))
-#            print m['sez_name'], first, last
-#            print allcoord[first:last]
-#            print '='*40
             first = last
-        # define sections attribute
+        # asign sections attribute
         self.sections = sectionlist
         return
+
+
+    def addSection(self, section=None):
+        self.sections.append(section)
+
+    def lenght(self, sectlist = None,  dim = 3):
+        """
+        >>> river = Reach()
+        >>> river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
+
+        tocalculate lenght just only 1D long x
+        >>> river.lenght(dim = 1)
+        1500.0
+
+        tocalculate lenght just only 2D long x and y
+        >>> river.lenght(dim = 2)
+        1585.0
+
+        tocalculate lenght just only 3D long x, y and z
+        >>> river.lenght(dim = 3)
+        1607.1999999999994
+
+        """
+        # check input
+        sectlist = self.sections if sectlist == None else sectlist
+        if dim<=3:
+            dim = int(dim)
+        else:
+            raise ValueError("dim must be <= 3")
+
+        l = []
+        for sez in sectlist:
+            x = dim -4
+            l.append(sez.coord[0][0:x])
+        array = np.array(l)
+        #print array
+        a1 = np.delete(array, 0, axis=0)
+        a2 = np.delete(array, -1, axis=0)
+        #print a1, a2
+        delta = a2-a1
+        #print delta
+        return np.sum(np.sqrt(delta * delta))
+
+#    def lenght(self, side='l'):
+#        """
+#        >>> river.lenght()
+#        1500
+#
+#        """
+#        if side == 'l':
+#            first_s=self.sections[0]
+#            last_s=self.sections[-1]
+#        #print str(first_s), str(last_s)
+#        return last_s.coord[0][0] - first_s.coord[0][0]
+
 
 
 if __name__ == "__main__":
