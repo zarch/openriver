@@ -25,8 +25,8 @@ class Section:
 
     coord = [[0,10],[0,0],[10,0],[20,0],[20,10]]
     sect = Section(0, coord)
-    sect.addSegment(sect.yzcoord[0:2], 35)
-    sect.addSegment(sect.yzcoord[2:], 40)
+    sect.addSegment(0, 2, 35)
+    sect.addSegment(2, -1, 40)
     """
     def __init__(self, name=None, xaxis=None,
         yzcoord=None, erodible=True,
@@ -46,9 +46,13 @@ class Section:
     def __str__(self):
         return str(self.name)
 
-    def addSegment(self, yzcoordSegm=None,
-            roughness=None):
-        self.segment.append(Section(yzcoord=yzcoordSegm, roughness=roughness, subsection=True))
+    def addSegment(self, start, end, roughness=None):
+        # TODO: should check if y or z are valid indexes?
+        if end in [-1, None]:
+            segm = self.coord[start:]
+        else:
+            segm = self.coord[start:end]
+        self.segment.append(Section(yzcoord=segm, roughness=roughness, subsection=True))
 
     def firstPointAfter_h(self, points, h):
         """Return index of the first
