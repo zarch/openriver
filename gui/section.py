@@ -32,16 +32,14 @@ class Main(QtGui.QMainWindow):
         for s in self.sezlist:
             listsect.append(str(s))
         self.ui.listSections.insertItems(0, listsect)
-#        self.connect(self, SIGNAL('currentChanged()'), self.item_changed)
-#        if self.ui.listSections.currentItemChanged():
-#            sez = self.ui.listSections.currentItem()
-#            print sez
-#            #viewTable(sez.coords)
 
-    def item_changed(self):
-             item = self.currentItem()
-             print item
-#             viewTable(item.coords)
+        # connect 'currentRowChanged(int)' SIGNAL to update tableSectionCoord
+        self.connect(self.ui.listSections, QtCore.SIGNAL('currentRowChanged(int)'), self.itemChanged)
+
+
+    def itemChanged(self):
+             index = self.ui.listSections.currentRow()
+             self.viewTable(self.sezlist[index].coord)
 
     def viewTable(self, array):
         # Let's do something interesting: load section coordinates
