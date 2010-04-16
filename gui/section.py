@@ -51,7 +51,8 @@ class Main(QtGui.QMainWindow):
                 item.setText(str(array[i][j]))
                 self.ui.tableSectionCoord.setItem(i,j,item)
 
-
+    def sectionChanged(self, text):
+        print repr(text)
 
 
 def main():

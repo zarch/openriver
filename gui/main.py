@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui/main.ui'
+# Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Fri Apr 16 11:15:08 2010
+# Created: Fri Apr 16 22:14:16 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -53,9 +53,8 @@ class Ui_MainWindow(object):
         self.menu_File.addAction(self.actionExport)
         self.menubar.addAction(self.menu_File.menuAction())
 
-
-
         self.retranslateUi(MainWindow)
+        QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentTextChanged(QString)"), MainWindow.sectionChanged)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
