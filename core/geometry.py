@@ -2,6 +2,8 @@
 import numpy as np
 import re
 
+from exceptions import *
+
 # section example
 sec_rectangular=[(0, 0), (0, -2), (10, -2), (10, 0)]
 sec_rectangular2=sec_rectangular[1:]
@@ -42,12 +44,41 @@ class Section:
         self.discontinuity = discontinuity
         self.subsection = subsection
         self.segment = []
+        self.limits = set()
 
     def __str__(self):
         return str(self.name)
 
+    def _checkSegment(self, start, end):
+        if end <= start and end not in [-1, None]:
+            return False
+        elif end in [-1, None]:
+            pass
+
+        # TODO: maybe something faster? It could become slow with real rivers :)
+        # TODO: maybe using __hash__ and __cmp__? Indexing? What else?
+        for t in self.limits:
+            if start < t[1] and t[1] not in [-1, None]:
+                # the new tuple begins before an already-registered
+                #+one ends.
+                return False
+            elif end > t[0]:
+                # the new tuple ends after an already-registered one
+                #+begins.
+                return False
+            elif t[1] in [-1, None] and start > t[0]:
+                # the new tuple beings after an already-registered one,
+                #+which ends to the end of the section though.
+                return False
+
+        self.limits.add((start, end))
+        return True
+
     def addSegment(self, start, end, roughness=None):
-        # TODO: should check if y or z are valid indexes?
+        if not self._checkSegment(start, end):
+            # TODO: maybe a more appropriate exception here.
+            raise OpenRiverException , "invalid segment: (%s, %s)" % (start, end)
+
         if end in [-1, None]:
             segm = self.coord[start:]
         else:
