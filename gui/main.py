@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui/main.ui'
 #
-# Created: Sat Apr 17 13:12:43 2010
+# Created: Sat Apr 17 13:15:52 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,9 +43,9 @@ class Ui_MainWindow(object):
         self.splitter_2.setObjectName("splitter_2")
         self.widget = QtGui.QWidget(self.splitter_2)
         self.widget.setObjectName("widget")
-        self.graphicsView = QtGui.QGraphicsView(self.centralwidget)
-        self.graphicsView.setGeometry(QtCore.QRect(0, 200, 651, 341))
-        self.graphicsView.setObjectName("graphicsView")
+        self.sectionGraphics = QtGui.QGraphicsView(self.centralwidget)
+        self.sectionGraphics.setGeometry(QtCore.QRect(0, 200, 651, 341))
+        self.sectionGraphics.setObjectName("sectionGraphics")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 21))

@@ -33,12 +33,13 @@ class Main(QtGui.QMainWindow):
             listsect.append(str(s))
         self.ui.listSections.insertItems(0, listsect)
 
-        # connect 'currentRowChanged(int)' SIGNAL to update tableSectionCoord
-        #self.connect(self.ui.listSections, QtCore.SIGNAL('currentRowChanged(int)'), self.itemChanged)
+        self.scene = self.ui.sectionGraphics
+
 
 
     def itemChanged(self, index):
-             self.viewTable(self.sezlist[index].coord)
+        coord = self.sezlist[index].coord
+        self.viewTable(coord)
 
     def viewTable(self, array):
         # Let's do something interesting: load section coordinates
@@ -52,6 +53,29 @@ class Main(QtGui.QMainWindow):
 
     def sectionChanged(self, text):
         print repr(text)
+
+    def drawSection(self, array):
+#        item = QtGui.QGraphicsItem()
+#        item.setFlags(QGraphicsItem.ItemIsSelectable)
+#        item.setPos(QPoint(array[0][1:3]))
+        y, z = array[0][1:3]
+        #print y,  z
+        item = Pnt(y, z)
+        #self.scene.clearSelection()
+        self.scene.addItem(item)
+
+class Pnt(QtGui.QGraphicsItem):
+    def __init__(self, y, z):
+        super(Pnt, self).__init__()
+        self.rect = QtCore.QRectF(-30, -20, 60, 40)
+        #self.color = color
+        #print position
+        self.setPos(y, z)
+
+    def shape(self):
+        path = QPainterPath()
+        path.addEllips(self.rect)
+        return path
 
 
 def main():

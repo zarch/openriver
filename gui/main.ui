@@ -84,7 +84,7 @@
      <widget class="QWidget" name="widget" native="true"/>
     </widget>
    </widget>
-   <widget class="QGraphicsView" name="graphicsView">
+   <widget class="QGraphicsView" name="sectionGraphics">
     <property name="geometry">
      <rect>
       <x>0</x>
