@@ -34,11 +34,10 @@ class Main(QtGui.QMainWindow):
         self.ui.listSections.insertItems(0, listsect)
 
         # connect 'currentRowChanged(int)' SIGNAL to update tableSectionCoord
-        self.connect(self.ui.listSections, QtCore.SIGNAL('currentRowChanged(int)'), self.itemChanged)
+        #self.connect(self.ui.listSections, QtCore.SIGNAL('currentRowChanged(int)'), self.itemChanged)
 
 
-    def itemChanged(self):
-             index = self.ui.listSections.currentRow()
+    def itemChanged(self, index):
              self.viewTable(self.sezlist[index].coord)
 
     def viewTable(self, array):

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main.ui'
+# Form implementation generated from reading ui file 'gui/main.ui'
 #
-# Created: Fri Apr 16 22:14:16 2010
+# Created: Sat Apr 17 13:12:43 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,15 +12,19 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(653, 597)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.listSections = QtGui.QListWidget(self.centralwidget)
+        self.splitter = QtGui.QSplitter(self.centralwidget)
+        self.splitter.setGeometry(QtCore.QRect(0, 0, 651, 192))
+        self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.setObjectName("splitter")
+        self.listSections = QtGui.QListWidget(self.splitter)
+        self.listSections.setMaximumSize(QtCore.QSize(200, 16777215))
         self.listSections.setObjectName("listSections")
-        self.horizontalLayout.addWidget(self.listSections)
-        self.tableSectionCoord = QtGui.QTableWidget(self.centralwidget)
+        self.tableSectionCoord = QtGui.QTableWidget(self.splitter)
+        self.tableSectionCoord.setMinimumSize(QtCore.QSize(450, 0))
+        self.tableSectionCoord.setMaximumSize(QtCore.QSize(256, 16777215))
         self.tableSectionCoord.setAlternatingRowColors(True)
         self.tableSectionCoord.setObjectName("tableSectionCoord")
         self.tableSectionCoord.setColumnCount(4)
@@ -34,10 +38,17 @@ class Ui_MainWindow(object):
         item = QtGui.QTableWidgetItem()
         self.tableSectionCoord.setHorizontalHeaderItem(3, item)
         self.tableSectionCoord.horizontalHeader().setCascadingSectionResizes(True)
-        self.horizontalLayout.addWidget(self.tableSectionCoord)
+        self.splitter_2 = QtGui.QSplitter(self.splitter)
+        self.splitter_2.setOrientation(QtCore.Qt.Vertical)
+        self.splitter_2.setObjectName("splitter_2")
+        self.widget = QtGui.QWidget(self.splitter_2)
+        self.widget.setObjectName("widget")
+        self.graphicsView = QtGui.QGraphicsView(self.centralwidget)
+        self.graphicsView.setGeometry(QtCore.QRect(0, 200, 651, 341))
+        self.graphicsView.setObjectName("graphicsView")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 21))
         self.menubar.setObjectName("menubar")
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
@@ -55,6 +66,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentTextChanged(QString)"), MainWindow.sectionChanged)
+        QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentRowChanged(int)"), MainWindow.itemChanged)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
