@@ -90,13 +90,13 @@ class Main(QtGui.QMainWindow):
             self.scene.addLine(line, pen)
             #self.scene.addEllipse(rect0, pen, brush)
             sezpnt = QtGui.QGraphicsEllipseItem(rect0)
-            sezpnt.setFlag(QtGui.QGraphicsItem.GraphicsItemFlag(QtCore.Qt.ItemIsSelectable))
+            sezpnt.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
             self.scene.addItem(sezpnt)
             pnt0 = pnt1
             rect0 = QtCore.QRectF(y-r, -z-r, 2*r, 2*r)
         #self.scene.addEllipse(rect0, pen, brush)
         sezpnt = QtGui.QGraphicsEllipseItem(rect0)
-        sezpnt.setFlag(QtGui.QGraphicsItem.GraphicsItemFlag(QtCore.Qt.ItemIsSelectable))
+        sezpnt.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
         self.scene.addItem(sezpnt)
 
     def minmax_ks(self):
