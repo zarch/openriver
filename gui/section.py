@@ -17,7 +17,17 @@ from os.path import join
 path.append(join('..','core'))
 import geometry as geo
 
+class SectionPoint(QGraphicsEllipseItem):
+    def __init__(self, window, point, *args):
+        super(SectionPoint, self).__init__(*args)
+        self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.window = window
+        self.row = point
 
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemSelectedChange:
+            self.window.ui.tableSectionCoord.selectRow(self.row)
+        return super(SectionPoint, self).itemChange(change, value)
 
 # Create a class for our main window
 class Main(QMainWindow):
@@ -81,6 +91,7 @@ class Main(QMainWindow):
 #        ksmin = min(kslist)
         r = 5
         x, y, z, ks = array[0]
+        i = -1
         pnt0 = QPointF(y, -z)
         #pnt0.setFlags(QGraphicsItem.ItemIsSelectable)
         rect0 = QRectF(y-r, -z-r, 2*r, 2*r)
@@ -91,15 +102,13 @@ class Main(QMainWindow):
             line = QLineF(pnt0, pnt1)
             self.scene.addLine(line, pen)
             #self.scene.addEllipse(rect0, pen, brush)
-            sezpnt = QGraphicsEllipseItem(rect0)
-            sezpnt.setFlag(QGraphicsItem.ItemIsSelectable)
-            self.scene.addItem(sezpnt)
+            i += 1
+            self.scene.addItem(SectionPoint(self, i, rect0))
             pnt0 = pnt1
             rect0 = QRectF(y-r, -z-r, 2*r, 2*r)
         #self.scene.addEllipse(rect0, pen, brush)
-        sezpnt = QGraphicsEllipseItem(rect0)
-        sezpnt.setFlag(QGraphicsItem.ItemIsSelectable)
-        self.scene.addItem(sezpnt)
+        i += 1
+        self.scene.addItem(SectionPoint(self, i, rect0))
 
     def minmax_ks(self):
         """Return min and max of ks looking from all sections"""
