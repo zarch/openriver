@@ -18,11 +18,19 @@ path.append(join('..','core'))
 import geometry as geo
 
 class SectionPoint(QGraphicsEllipseItem):
-    def __init__(self, window, point, *args):
-        super(SectionPoint, self).__init__(*args)
-        self.setFlag(QGraphicsItem.ItemIsSelectable)
+    def __init__(self, window, index, data):
         self.window = window
-        self.row = point
+        self.row = index
+
+        self.data = data
+        r = 5
+        x, y, z, ks = self.data
+        self.bbox = QRectF(y-r, -z-r, 2*r, 2*r)
+        self.point = QPointF(y, -z)
+
+        super(SectionPoint, self).__init__(self.bbox)
+        self.setBrush(QBrush(QColor(0, 0, 150)))
+        self.setFlag(QGraphicsItem.ItemIsSelectable)
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
@@ -90,25 +98,18 @@ class Main(QMainWindow):
 #        ksmax = max(kslist)
 #        ksmin = min(kslist)
         r = 5
-        x, y, z, ks = array[0]
-        i = -1
-        pnt0 = QPointF(y, -z)
-        #pnt0.setFlags(QGraphicsItem.ItemIsSelectable)
-        rect0 = QRectF(y-r, -z-r, 2*r, 2*r)
-        for x, y, z, ks in array[1:]:
-            pen = QPen(QColor(150, 0, 0))
-            brush = QBrush(QColor(0, 0, 150))
-            pnt1 = QPointF(y, -z)
-            line = QLineF(pnt0, pnt1)
-            self.scene.addLine(line, pen)
-            #self.scene.addEllipse(rect0, pen, brush)
+        i = 0
+        pen = QPen(QColor(150, 0, 0))
+
+
+        pnt0 = SectionPoint(self, i, array[0])
+        self.scene.addItem(pnt0)
+        for data in array[1:]:
             i += 1
-            self.scene.addItem(SectionPoint(self, i, rect0))
+            pnt1 = SectionPoint(self, i, data)
+            self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen)
+            self.scene.addItem(pnt1)
             pnt0 = pnt1
-            rect0 = QRectF(y-r, -z-r, 2*r, 2*r)
-        #self.scene.addEllipse(rect0, pen, brush)
-        i += 1
-        self.scene.addItem(SectionPoint(self, i, rect0))
 
     def minmax_ks(self):
         """Return min and max of ks looking from all sections"""
