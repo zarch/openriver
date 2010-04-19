@@ -88,13 +88,16 @@ class Main(QtGui.QMainWindow):
             pnt1 = QtCore.QPointF(y, -z)
             line = QtCore.QLineF(pnt0, pnt1)
             self.scene.addLine(line, pen)
-            #sezpnt = QtGui.QGraphicsEllipseItem(rect0)
-            #sezpnt.setFlag(QtCore.Qt.ItemIsSelectable)
-            #self.scene.addItem(sezpnt)
-            self.scene.addEllipse(rect0, pen, brush)
+            #self.scene.addEllipse(rect0, pen, brush)
+            sezpnt = QtGui.QGraphicsEllipseItem(rect0)
+            sezpnt.setFlag(QtGui.QGraphicsItem.GraphicsItemFlag(QtCore.Qt.ItemIsSelectable))
+            self.scene.addItem(sezpnt)
             pnt0 = pnt1
             rect0 = QtCore.QRectF(y-r, -z-r, 2*r, 2*r)
-        self.scene.addEllipse(rect0, pen, brush)
+        #self.scene.addEllipse(rect0, pen, brush)
+        sezpnt = QtGui.QGraphicsEllipseItem(rect0)
+        sezpnt.setFlag(QtGui.QGraphicsItem.GraphicsItemFlag(QtCore.Qt.ItemIsSelectable))
+        self.scene.addItem(sezpnt)
 
     def minmax_ks(self):
         """Return min and max of ks looking from all sections"""
