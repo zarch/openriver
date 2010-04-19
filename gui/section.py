@@ -4,7 +4,9 @@
 import os,sys
 
 # Import Qt modules
-from PyQt4 import QtCore,QtGui, Qt
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.Qt import *
 
 # Import the compiled UI module
 from main import Ui_MainWindow
@@ -18,9 +20,9 @@ import geometry as geo
 
 
 # Create a class for our main window
-class Main(QtGui.QMainWindow):
+class Main(QMainWindow):
     def __init__(self,  sezlist):
-        QtGui.QMainWindow.__init__(self)
+        QMainWindow.__init__(self)
         self.sezlist = sezlist
 
         # This is always the same
@@ -34,24 +36,24 @@ class Main(QtGui.QMainWindow):
         self.ui.listSections.insertItems(0, listsect)
 
 #        self.view = self.ui.sectionGraphics
-        self.scene = QtGui.QGraphicsScene(self)
+        self.scene = QGraphicsScene(self)
         #self.scene.setSceneRect(0, 0, 10, 20)
-        green = QtGui.QColor(0, 150, 0)
+        green = QColor(0, 150, 0)
         #self.scene.setBackgroundBrush(QtGui.QBrush(green))
         self.ui.sectionGraphics.setScene(self.scene)
 
         ksmin, ksmax = self.minmax_ks()
         self.ksmin, self.ksmax = ksmin, ksmax
 
-#        #path = QtGui.QPainterPath(0, 10, 0, 0, 20, 5)
-#        rect0 = QtCore.QRectF(0, 0, 200, 50)
-#        rect1 = QtCore.QRectF(0, 0, 20, 50)
-#        pen = QtGui.QPen(QtGui.QColor(150, 0, 0))
-#        brush = QtGui.QBrush(QtGui.QColor(0, 0, 150))
-#        pnt = QtCore.QPointF
+#        #path = QPainterPath(0, 10, 0, 0, 20, 5)
+#        rect0 = QRectF(0, 0, 200, 50)
+#        rect1 = QRectF(0, 0, 20, 50)
+#        pen = QPen(QtGui.QColor(150, 0, 0))
+#        brush = QBrush(QtGui.QColor(0, 0, 150))
+#        pnt = QPointF
 #        pnt0 = pnt(0, 0)
 #        pnt1 = pnt(-200, 200)
-#        line0 = QtCore.QLineF(pnt0, pnt1)
+#        line0 = QLineF(pnt0, pnt1)
 #        self.scene.addRect(rect0, pen, brush)
 #        self.scene.addEllipse(rect1, pen, brush)
 #        self.scene.addLine(line0, pen)
@@ -68,7 +70,7 @@ class Main(QtGui.QMainWindow):
         self.ui.tableSectionCoord.setRowCount(len(array))
         for i, row in enumerate(array):
             for j, numb in enumerate(row):
-                item = QtGui.QTableWidgetItem()
+                item = QTableWidgetItem()
                 item.setText(str(array[i][j]))
                 self.ui.tableSectionCoord.setItem(i,j,item)
 
@@ -79,24 +81,24 @@ class Main(QtGui.QMainWindow):
 #        ksmin = min(kslist)
         r = 5
         x, y, z, ks = array[0]
-        pnt0 = QtCore.QPointF(y, -z)
-        #pnt0.setFlags(QtGui.QGraphicsItem.ItemIsSelectable)
-        rect0 = QtCore.QRectF(y-r, -z-r, 2*r, 2*r)
+        pnt0 = QPointF(y, -z)
+        #pnt0.setFlags(QGraphicsItem.ItemIsSelectable)
+        rect0 = QRectF(y-r, -z-r, 2*r, 2*r)
         for x, y, z, ks in array[1:]:
-            pen = QtGui.QPen(QtGui.QColor(150, 0, 0))
-            brush = QtGui.QBrush(QtGui.QColor(0, 0, 150))
-            pnt1 = QtCore.QPointF(y, -z)
-            line = QtCore.QLineF(pnt0, pnt1)
+            pen = QPen(QColor(150, 0, 0))
+            brush = QBrush(QColor(0, 0, 150))
+            pnt1 = QPointF(y, -z)
+            line = QLineF(pnt0, pnt1)
             self.scene.addLine(line, pen)
             #self.scene.addEllipse(rect0, pen, brush)
-            sezpnt = QtGui.QGraphicsEllipseItem(rect0)
-            sezpnt.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
+            sezpnt = QGraphicsEllipseItem(rect0)
+            sezpnt.setFlag(QGraphicsItem.ItemIsSelectable)
             self.scene.addItem(sezpnt)
             pnt0 = pnt1
-            rect0 = QtCore.QRectF(y-r, -z-r, 2*r, 2*r)
+            rect0 = QRectF(y-r, -z-r, 2*r, 2*r)
         #self.scene.addEllipse(rect0, pen, brush)
-        sezpnt = QtGui.QGraphicsEllipseItem(rect0)
-        sezpnt.setFlag(QtGui.QGraphicsItem.ItemIsSelectable)
+        sezpnt = QGraphicsEllipseItem(rect0)
+        sezpnt.setFlag(QGraphicsItem.ItemIsSelectable)
         self.scene.addItem(sezpnt)
 
     def minmax_ks(self):
@@ -117,7 +119,7 @@ def main():
     river = geo.Reach()
     river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
 
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     window=Main(river.sections)
     window.show()
     # It's exec_ because exec is a reserved word in Python
