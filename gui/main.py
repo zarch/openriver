@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui/main.ui'
 #
-# Created: Sat Apr 17 13:15:52 2010
+# Created: Mon Apr 19 11:34:23 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -65,7 +65,6 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_File.menuAction())
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentTextChanged(QString)"), MainWindow.sectionChanged)
         QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentRowChanged(int)"), MainWindow.itemChanged)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

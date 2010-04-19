@@ -4,7 +4,7 @@
 import os,sys
 
 # Import Qt modules
-from PyQt4 import QtCore,QtGui
+from PyQt4 import QtCore,QtGui, Qt
 
 # Import the compiled UI module
 from main import Ui_MainWindow
@@ -33,13 +33,34 @@ class Main(QtGui.QMainWindow):
             listsect.append(str(s))
         self.ui.listSections.insertItems(0, listsect)
 
-        self.scene = self.ui.sectionGraphics
+#        self.view = self.ui.sectionGraphics
+        self.scene = QtGui.QGraphicsScene(self)
+        #self.scene.setSceneRect(0, 0, 10, 20)
+        green = QtGui.QColor(0, 150, 0)
+        #self.scene.setBackgroundBrush(QtGui.QBrush(green))
+        self.ui.sectionGraphics.setScene(self.scene)
 
+        ksmin, ksmax = self.minmax_ks()
+        self.ksmin, self.ksmax = ksmin, ksmax
+
+#        #path = QtGui.QPainterPath(0, 10, 0, 0, 20, 5)
+#        rect0 = QtCore.QRectF(0, 0, 200, 50)
+#        rect1 = QtCore.QRectF(0, 0, 20, 50)
+#        pen = QtGui.QPen(QtGui.QColor(150, 0, 0))
+#        brush = QtGui.QBrush(QtGui.QColor(0, 0, 150))
+#        pnt = QtCore.QPointF
+#        pnt0 = pnt(0, 0)
+#        pnt1 = pnt(-200, 200)
+#        line0 = QtCore.QLineF(pnt0, pnt1)
+#        self.scene.addRect(rect0, pen, brush)
+#        self.scene.addEllipse(rect1, pen, brush)
+#        self.scene.addLine(line0, pen)
 
 
     def itemChanged(self, index):
         coord = self.sezlist[index].coord
         self.viewTable(coord)
+        self.drawSection(coord)
 
     def viewTable(self, array):
         # Let's do something interesting: load section coordinates
@@ -51,31 +72,41 @@ class Main(QtGui.QMainWindow):
                 item.setText(str(array[i][j]))
                 self.ui.tableSectionCoord.setItem(i,j,item)
 
-    def sectionChanged(self, text):
-        print repr(text)
-
     def drawSection(self, array):
-#        item = QtGui.QGraphicsItem()
-#        item.setFlags(QGraphicsItem.ItemIsSelectable)
-#        item.setPos(QPoint(array[0][1:3]))
-        y, z = array[0][1:3]
-        #print y,  z
-        item = Pnt(y, z)
-        #self.scene.clearSelection()
-        self.scene.addItem(item)
+        self.scene.clear()
+#        kslist = array.T[3]
+#        ksmax = max(kslist)
+#        ksmin = min(kslist)
+        r = 5
+        x, y, z, ks = array[0]
+        pnt0 = QtCore.QPointF(y, -z)
+        #pnt0.setFlags(QtGui.QGraphicsItem.ItemIsSelectable)
+        rect0 = QtCore.QRectF(y-r, -z-r, 2*r, 2*r)
+        for x, y, z, ks in array[1:]:
+            pen = QtGui.QPen(QtGui.QColor(150, 0, 0))
+            brush = QtGui.QBrush(QtGui.QColor(0, 0, 150))
+            pnt1 = QtCore.QPointF(y, -z)
+            line = QtCore.QLineF(pnt0, pnt1)
+            self.scene.addLine(line, pen)
+            #sezpnt = QtGui.QGraphicsEllipseItem(rect0)
+            #sezpnt.setFlag(QtCore.Qt.ItemIsSelectable)
+            #self.scene.addItem(sezpnt)
+            self.scene.addEllipse(rect0, pen, brush)
+            pnt0 = pnt1
+            rect0 = QtCore.QRectF(y-r, -z-r, 2*r, 2*r)
+        self.scene.addEllipse(rect0, pen, brush)
 
-class Pnt(QtGui.QGraphicsItem):
-    def __init__(self, y, z):
-        super(Pnt, self).__init__()
-        self.rect = QtCore.QRectF(-30, -20, 60, 40)
-        #self.color = color
-        #print position
-        self.setPos(y, z)
-
-    def shape(self):
-        path = QPainterPath()
-        path.addEllips(self.rect)
-        return path
+    def minmax_ks(self):
+        """Return min and max of ks looking from all sections"""
+        min = 0
+        max = 0
+        for s in self.sezlist:
+            kslist = s.coord.T[3]
+            min0 = kslist.min()
+            max0 = kslist.max()
+            min = min if min < min0 else min0
+            max = max if max > max0 else max0
+        return min, max
 
 
 def main():
