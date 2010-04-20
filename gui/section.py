@@ -10,6 +10,7 @@ from PyQt4.Qt import *
 
 # Import the compiled UI module
 from main import Ui_MainWindow
+from importOri import Ui_importORI
 
 # Import geometry from core
 from sys import path
@@ -53,29 +54,12 @@ class Main(QMainWindow):
             listsect.append(str(s))
         self.ui.listSections.insertItems(0, listsect)
 
-#        self.view = self.ui.sectionGraphics
         self.scene = QGraphicsScene(self)
-        #self.scene.setSceneRect(0, 0, 10, 20)
         green = QColor(0, 150, 0)
-        #self.scene.setBackgroundBrush(QtGui.QBrush(green))
         self.ui.sectionGraphics.setScene(self.scene)
 
         ksmin, ksmax = self.minmax_ks()
         self.ksmin, self.ksmax = ksmin, ksmax
-
-#        #path = QPainterPath(0, 10, 0, 0, 20, 5)
-#        rect0 = QRectF(0, 0, 200, 50)
-#        rect1 = QRectF(0, 0, 20, 50)
-#        pen = QPen(QtGui.QColor(150, 0, 0))
-#        brush = QBrush(QtGui.QColor(0, 0, 150))
-#        pnt = QPointF
-#        pnt0 = pnt(0, 0)
-#        pnt1 = pnt(-200, 200)
-#        line0 = QLineF(pnt0, pnt1)
-#        self.scene.addRect(rect0, pen, brush)
-#        self.scene.addEllipse(rect1, pen, brush)
-#        self.scene.addLine(line0, pen)
-
 
     def itemChanged(self, index):
         coord = self.sezlist[index].coord
@@ -94,13 +78,9 @@ class Main(QMainWindow):
 
     def drawSection(self, array):
         self.scene.clear()
-#        kslist = array.T[3]
-#        ksmax = max(kslist)
-#        ksmin = min(kslist)
         r = 5
         i = 0
         pen = QPen(QColor(150, 0, 0))
-
 
         pnt0 = SectionPoint(self, i, array[0])
         self.scene.addItem(pnt0)
@@ -122,6 +102,19 @@ class Main(QMainWindow):
             min = min if min < min0 else min0
             max = max if max > max0 else max0
         return min, max
+
+    def on_action_Open_triggered(self,checked=None):
+        if checked is None: return
+        filename = QFileDialog.getOpenFileName(self, 'Open project', '/home')
+        print filename
+
+    def on_actionImport_triggered(self,checked=None):
+        if checked is None: return
+        sectionsfilename = QFileDialog.getOpenFileName(self, 'Import sections.ori file', '/home')
+        pointsfilename = QFileDialog.getOpenFileName(self, 'Import points.ori file', sectionsfilename)
+        river = geo.Reach()
+        river.importFileORI(sectionsfilename, pointsfilename)
+
 
 
 def main():
