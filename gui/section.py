@@ -38,7 +38,7 @@ class SectionModel(QAbstractTableModel):
     def setData(self, index, value, role=Qt.EditRole):
         if index.isValid() and role == Qt.EditRole:
             self.array[index.row()][index.column()] = float(value.toDouble()[0])
-            # TODO: should update the point too
+            self.dataChanged.emit(index, index)
             return True
         return False
 
@@ -141,8 +141,15 @@ class Main(QMainWindow):
 
     def itemChanged(self, index):
         coord = self.sezlist[index].coord
+        self.sectionModel = SectionModel(coord)
+        self.ui.tableSectionCoordView.setModel(self.sectionModel)
+
+        self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
         self.viewTable(coord)
         self.drawSection(coord)
+
+    def dataModelChanged(self, index, index2):
+        self.drawSection(self.sectionModel.array)
 
     def viewTable(self, array):
         # Let's do something interesting: load section coordinates
@@ -153,8 +160,6 @@ class Main(QMainWindow):
                 item = QTableWidgetItem()
                 item.setText(str(array[i][j]))
                 self.ui.tableSectionCoord.setItem(i,j,item)
-        self.sectionModel = SectionModel(array)
-        self.ui.tableSectionCoordView.setModel(self.sectionModel)
 
     def drawSection(self, array):
         self.scene.clear()
