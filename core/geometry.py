@@ -29,12 +29,14 @@ class Section:
     sect.addSegment(sect.yzcoord[2:], 40)
     """
     def __init__(self, name=None, xaxis=None,
-        yzcoord=None, erodible=True,
+        yzcoord=None, first = 0,  last = -1,  erodible=True,
         roughness=None, discontinuity=False,
         subsection=False):
         self.name = name
         self.xaxis = xaxis
         self.coord = np.array(yzcoord)
+        self.first = first
+        self.last = -last
         minimum = self.coord[1].argmin()
         self.min = minimum
         self.erodible = erodible
@@ -42,6 +44,7 @@ class Section:
         self.discontinuity = discontinuity
         self.subsection = subsection
         self.segment = []
+
 
     def __str__(self):
         return str(self.name)
@@ -248,11 +251,45 @@ class Reach:
             #print 'Numero punti sezione: %s\nSezione: %s\nPrimoPunto: %s\nPrimoPuntoH: %s\nUltimoPunto: %s\nUltimoPuntoH: %s\n' % (m['points_num'], m['sez_name'], m['first_point'],m['first_point_h'], m['last_point'],m['last_point_h'])
             first += int(m['first_point']) - 1
             last +=  int(m['last_point'])
-            sectionlist.append(Section(name = m['sez_name'], yzcoord = allcoord[first:last]))
+            sectionlist.append(Section(name = m['sez_name'], yzcoord = allcoord, first=first, last=last))
             first = last
         # asign sections attribute
         self.sections = sectionlist
         return
+
+    def exportFileOri(self, sectionfilename, pointsfilename):
+        """
+        >>> river = Reach()
+        >>> river.importFileORI('../test/importexport/sections.ori', '../test/importexport/points.ori')
+        >>> river.exportFileOri('../test/importexport/sectionsTEST.ori', '../test/importexport/pointsTEST.ori')
+        Start writing: ../test/importexport/sectionsTEST.ori
+        Start writing: ../test/importexport/pointsTEST.ori
+        Finish
+        """
+
+        sectionFile = open(sectionfilename, "w")
+        print "Start writing: %s" % sectionfilename
+        sectionFile.write('%s\n' % len(self.sections))
+        for section in self.sections:
+            #301
+            #4  sez0001
+            #1  100.00000   4  100.00000
+            sectionFile.write('%s %s\n%s %s %s %s\n' % (len(section.coord),
+                                                      section.name,
+                                                      section.first +1,
+                                                      section.coord[section.first][2],
+                                                      section.last,
+                                                      section.coord[section.last][2],))
+        sectionFile.close()
+        print "Start writing: %s" % pointsfilename
+        pointsFile = open(pointsfilename, "w")
+        for section in self.sections:
+            rowlist = []
+            for row in section.coord:
+                rowlist.append(" ".join([str(x) for x in row]))
+            pointsFile.write('%s' % "\n".join([r for r in rowlist]))
+        pointsFile.close()
+        print "Finish"
 
 
     def addSection(self, section=None):
@@ -263,15 +300,15 @@ class Reach:
         >>> river = Reach()
         >>> river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
 
-        tocalculate lenght just only 1D long x
+        to calculate lenght just only 1D long x
         >>> river.lenght(dim = 1)
         1500.0
 
-        tocalculate lenght just only 2D long x and y
+        to calculate lenght just only 2D long x and y
         >>> river.lenght(dim = 2)
         1585.0
 
-        tocalculate lenght just only 3D long x, y and z
+        to calculate lenght just only 3D long x, y and z
         >>> river.lenght(dim = 3)
         1607.1999999999994
 
