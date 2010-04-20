@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui/main.ui'
+# Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue Apr 20 17:22:21 2010
+# Created: Tue Apr 20 21:48:51 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,26 +15,30 @@ class Ui_MainWindow(object):
         MainWindow.resize(653, 597)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.sectionGraphics = QtGui.QGraphicsView(self.centralwidget)
-        self.sectionGraphics.setGeometry(QtCore.QRect(0, 240, 651, 311))
-        self.sectionGraphics.setObjectName("sectionGraphics")
-        self.listSections = QtGui.QListWidget(self.centralwidget)
-        self.listSections.setGeometry(QtCore.QRect(5, 1, 200, 223))
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.splitter = QtGui.QSplitter(self.centralwidget)
+        self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.setObjectName("splitter")
+        self.listSections = QtGui.QListWidget(self.splitter)
         self.listSections.setObjectName("listSections")
-        self.widget = QtGui.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(209, 2, 441, 223))
-        self.widget.setObjectName("widget")
-        self.verticalLayout = QtGui.QVBoxLayout(self.widget)
+        self.layoutWidget = QtGui.QWidget(self.splitter)
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.verticalLayout = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.lineTabEdit = QtGui.QLineEdit(self.widget)
+        self.lineTabEdit = QtGui.QLineEdit(self.layoutWidget)
         self.lineTabEdit.setObjectName("lineTabEdit")
         self.verticalLayout.addWidget(self.lineTabEdit)
-        self.tableSectionCoord = QtGui.QTableView(self.widget)
+        self.tableSectionCoord = QtGui.QTableView(self.layoutWidget)
         self.tableSectionCoord.setObjectName("tableSectionCoord")
         self.verticalLayout.addWidget(self.tableSectionCoord)
+        self.verticalLayout_2.addWidget(self.splitter)
+        self.sectionGraphics = QtGui.QGraphicsView(self.centralwidget)
+        self.sectionGraphics.setObjectName("sectionGraphics")
+        self.verticalLayout_2.addWidget(self.sectionGraphics)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 22))
         self.menubar.setObjectName("menubar")
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")

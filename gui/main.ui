@@ -14,44 +14,29 @@
    <string>openriver</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGraphicsView" name="sectionGraphics">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>240</y>
-      <width>651</width>
-      <height>311</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="listSections">
-    <property name="geometry">
-     <rect>
-      <x>5</x>
-      <y>1</y>
-      <width>200</width>
-      <height>223</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>209</x>
-      <y>2</y>
-      <width>441</width>
-      <height>223</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLineEdit" name="lineTabEdit"/>
-     </item>
-     <item>
-      <widget class="QTableView" name="tableSectionCoord"/>
-     </item>
-    </layout>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QListWidget" name="listSections"/>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLineEdit" name="lineTabEdit"/>
+        </item>
+        <item>
+         <widget class="QTableView" name="tableSectionCoord"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGraphicsView" name="sectionGraphics"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -59,7 +44,7 @@
      <x>0</x>
      <y>0</y>
      <width>653</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
