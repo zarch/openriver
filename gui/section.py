@@ -109,7 +109,7 @@ class Main(QMainWindow):
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
 
-        #populate the list section
+        # populate the list section
         listsect = []
         for s in self.sezlist:
             listsect.append(str(s))
@@ -118,6 +118,11 @@ class Main(QMainWindow):
         self.scene = QGraphicsScene(self)
         green = QColor(0, 150, 0)
         self.ui.sectionGraphics.setScene(self.scene)
+
+        # take line edit from the UI and set data type Validation
+        self.edit = self.ui.lineTabEdit
+        float_validator = QDoubleValidator(-999999.0, 999999.0, 3, self.edit)
+        self.edit.setValidator(float_validator)
 
         ksmin, ksmax = self.minmax_ks()
         self.ksmin, self.ksmax = ksmin, ksmax
@@ -171,6 +176,22 @@ class Main(QMainWindow):
         pointsfilename = QFileDialog.getOpenFileName(self, 'Import points.ori file', sectionsfilename)
         river = geo.Reach()
         river.importFileORI(sectionsfilename, pointsfilename)
+
+    def on_action_Run_triggered(self,checked=None):
+        if checked is None: return
+        # TODO:
+        #    * add command to compile?
+        #    * or make /bin directory and check which system (32/64 bit) is running and which OS? and then run the comand?
+        os.system('./../core/fixbed_sw_1D.out')
+
+    def on_lineTabEdit_returnPressed(self, checked=None):
+        # selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
+        cellist = self.ui.tableSectionCoord.selectedIndexes()
+        newvalue = self.edit.text()
+        #print self.sectionModel.array
+        for cel in cellist:
+            self.sectionModel.setData(cel, newvalue)
+        self.edit.clear()
 
 
 
