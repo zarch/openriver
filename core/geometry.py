@@ -29,7 +29,7 @@ class Section:
     sect.addSegment(sect.yzcoord[2:], 40)
     """
     def __init__(self, name=None, xaxis=None,
-        yzcoord=None, first = 0,  last = -1,  erodible=True,
+        yzcoord=None, first=0,  last=-1,  erodible=True,
         roughness=None, discontinuity=False,
         subsection=False):
         self.name = name
@@ -44,7 +44,6 @@ class Section:
         self.discontinuity = discontinuity
         self.subsection = subsection
         self.segment = []
-
 
     def __str__(self):
         return str(self.name)
@@ -177,7 +176,7 @@ class Reach:
     """
     def __init__(self,  sections = []):
         self.sections = sections
-        #self.lenght = self.sections[-1].coord[0]-self.sections[0].coord[0] if self.sections else None
+        #self.length = self.sections[-1].coord[0]-self.sections[0].coord[0] if self.sections else None
 
     def __str__(self):
         slist = []
@@ -251,7 +250,7 @@ class Reach:
             #print 'Numero punti sezione: %s\nSezione: %s\nPrimoPunto: %s\nPrimoPuntoH: %s\nUltimoPunto: %s\nUltimoPuntoH: %s\n' % (m['points_num'], m['sez_name'], m['first_point'],m['first_point_h'], m['last_point'],m['last_point_h'])
             first += int(m['first_point']) - 1
             last +=  int(m['last_point'])
-            sectionlist.append(Section(name = m['sez_name'], yzcoord = allcoord, first=first, last=last))
+            sectionlist.append(Section(name=m['sez_name'], yzcoord=allcoord, first=first, last=last))
             first = last
         # asign sections attribute
         self.sections = sectionlist
@@ -295,27 +294,29 @@ class Reach:
     def addSection(self, section=None):
         self.sections.append(section)
 
-    def lenght(self, sectlist = None,  dim = 3):
+    def length(self, sectlist = None,  dim = 3):
         """
         >>> river = Reach()
         >>> river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
 
-        to calculate lenght just only 1D long x
-        >>> river.lenght(dim = 1)
+        to calculate length just only 1D long x
+        >>> river.length(dim = 1)
         1500.0
 
-        to calculate lenght just only 2D long x and y
-        >>> river.lenght(dim = 2)
+        to calculate length just only 2D long x and y
+        >>> river.length(dim = 2)
         1585.0
 
-        to calculate lenght just only 3D long x, y and z
-        >>> river.lenght(dim = 3)
+        to calculate length just only 3D long x, y and z
+        >>> river.length(dim = 3)
         1607.1999999999994
 
         """
         # check input
-        sectlist = self.sections if sectlist == None else sectlist
-        if dim<=3:
+        if not sectlist:
+            sectlist = self.sections
+
+        if dim <= 3:
             dim = int(dim)
         else:
             raise ValueError("dim must be <= 3")
@@ -329,13 +330,13 @@ class Reach:
         a1 = np.delete(array, 0, axis=0)
         a2 = np.delete(array, -1, axis=0)
         #print a1, a2
-        delta = a2-a1
+        delta = a2 - a1
         #print delta
         return np.sum(np.sqrt(delta * delta))
 
-#    def lenght(self, side='l'):
+#    def length(self, side='l'):
 #        """
-#        >>> river.lenght()
+#        >>> river.length()
 #        1500
 #
 #        """
