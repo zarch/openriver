@@ -14,86 +14,59 @@
    <string>openriver</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QSplitter" name="splitter">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>651</width>
-      <height>192</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <widget class="QListWidget" name="listSections">
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>16777215</height>
-      </size>
-     </property>
-    </widget>
-    <widget class="QTableWidget" name="tableSectionCoord">
-     <property name="minimumSize">
-      <size>
-       <width>450</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>256</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <attribute name="horizontalHeaderCascadingSectionResizes">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="horizontalHeaderCascadingSectionResizes">
-      <bool>true</bool>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>X</string>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Y</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Z</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>ks</string>
-      </property>
-     </column>
-    </widget>
-    <widget class="QSplitter" name="splitter_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <widget class="QWidget" name="widget" native="true"/>
-    </widget>
-   </widget>
-   <widget class="QGraphicsView" name="sectionGraphics">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>200</y>
-      <width>651</width>
-      <height>341</height>
-     </rect>
-    </property>
-   </widget>
+      <widget class="QListWidget" name="listSections"/>
+      <widget class="QTableWidget" name="tableSectionCoord">
+       <property name="minimumSize">
+        <size>
+         <width>450</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>true</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>X</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Y</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Z</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>ks</string>
+        </property>
+       </column>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableView" name="tableSectionCoordView"/>
+    </item>
+    <item>
+     <widget class="QGraphicsView" name="sectionGraphics"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -101,7 +74,7 @@
      <x>0</x>
      <y>0</y>
      <width>653</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

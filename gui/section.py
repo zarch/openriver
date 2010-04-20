@@ -17,6 +17,48 @@ from os.path import join
 path.append(join('..','core'))
 import geometry as geo
 
+class SectionModel(QAbstractTableModel):
+    def __init__(self, array):
+        super(SectionModel, self).__init__()
+        self.array = array
+
+    def rowCount(self, parent):
+        return len(self.array)
+
+    def columnCount(self, parent):
+        return max(map(len, self.array))
+
+    def data(self, index, role):
+        # TODO: to be subclassed
+        pass
+
+    def headerData(self, section, orientation, role):
+        # TODO: doesn't work?
+        ##headers = QHeaderView()
+        sections = ["x", "y", "z", "ks"]
+        return sections[section]
+
+    # Models that provide interfaces to resizable data structures can provide
+    # implementations of insertRows(), removeRows(), insertColumns(), and
+    # removeColumns(). When implementing these functions, it is important to
+    # call the appropriate functions so that all connected views are aware of
+    # any changes:
+    # * An insertRows() implementation must call beginInsertRows() before
+    #   inserting new rows into the data structure, and it must call
+    #   endInsertRows() immediately afterwards.
+    # * An insertColumns() implementation must call beginInsertColumns()
+    #   before inserting new columns into the data structure, and it must call
+    #   endInsertColumns() immediately afterwards.
+    # * A removeRows() implementation must call beginRemoveRows() before the
+    #   rows are removed from the data structure, and it must call endRemoveRows()
+    #   immediately afterwards.
+    # * A removeColumns() implementation must call beginRemoveColumns() before the
+    #   columns are removed from the data structure, and it must call
+    #   endRemoveColumns() immediately afterwards.
+
+    # http://doc.trolltech.com/4.6/model-view-model-subclassing.html
+    # http://doc.trolltech.com/4.6/qabstracttablemodel.html
+
 class SectionPoint(QGraphicsEllipseItem):
     def __init__(self, window, index, data):
         self.window = window
@@ -91,6 +133,9 @@ class Main(QMainWindow):
                 item = QTableWidgetItem()
                 item.setText(str(array[i][j]))
                 self.ui.tableSectionCoord.setItem(i,j,item)
+        self.sectionModel = SectionModel(array)
+        self.ui.tableSectionCoordView.setModel(self.sectionModel)
+        self.ui.tableSectionCoordView.horizontalHeader().setVisible(True)
 
     def drawSection(self, array):
         self.scene.clear()
@@ -100,7 +145,6 @@ class Main(QMainWindow):
         r = 5
         i = 0
         pen = QPen(QColor(150, 0, 0))
-
 
         pnt0 = SectionPoint(self, i, array[0])
         self.scene.addItem(pnt0)
