@@ -21,43 +21,7 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QListWidget" name="listSections"/>
-      <widget class="QTableWidget" name="tableSectionCoord">
-       <property name="minimumSize">
-        <size>
-         <width>450</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <attribute name="horizontalHeaderCascadingSectionResizes">
-        <bool>true</bool>
-       </attribute>
-       <attribute name="horizontalHeaderCascadingSectionResizes">
-        <bool>true</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>X</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Y</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Z</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>ks</string>
-        </property>
-       </column>
-      </widget>
+      <widget class="QTableView" name="tableSectionCoord"/>
      </widget>
     </item>
     <item>

@@ -17,6 +17,67 @@ from os.path import join
 path.append(join('..','core'))
 import geometry as geo
 
+class SectionModel(QAbstractTableModel):
+    def __init__(self, array):
+        super(SectionModel, self).__init__()
+        self.array = array
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self.array)
+
+    def columnCount(self, parent=QModelIndex()):
+        return max(map(len, self.array))
+
+    def data(self, index, role=Qt.DisplayRole):
+        if index.isValid() and role == Qt.DisplayRole:
+            ret = self.array[index.row()][index.column()]
+            # TODO: with "float()", it doesn't show any decimal, if ".0"
+            return QVariant(str(ret))
+        return QVariant()
+
+    def setData(self, index, value, role=Qt.EditRole):
+        if index.isValid() and role == Qt.EditRole:
+            self.array[index.row()][index.column()] = float(value.toDouble()[0])
+            self.dataChanged.emit(index, index)
+            return True
+        return False
+
+    def flags(self, index):
+        ret = super(SectionModel, self).flags(index)
+        ret |= Qt.ItemIsEditable
+        return ret
+
+    def headerData(self, col, orientation, role=Qt.DisplayRole):
+        sections = ["x", "y", "z", "ks"]
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return QVariant(sections[col])
+            elif orientation == Qt.Vertical:
+                #return QVariant(col + 1)
+                return super(SectionModel, self).headerData(col, orientation, role)
+        return QVariant()
+
+    # Models that provide interfaces to resizable data structures can provide
+    # implementations of insertRows(), removeRows(), insertColumns(), and
+    # removeColumns(). When implementing these functions, it is important to
+    # call the appropriate functions so that all connected views are aware of
+    # any changes:
+    # * An insertRows() implementation must call beginInsertRows() before
+    #   inserting new rows into the data structure, and it must call
+    #   endInsertRows() immediately afterwards.
+    # * An insertColumns() implementation must call beginInsertColumns()
+    #   before inserting new columns into the data structure, and it must call
+    #   endInsertColumns() immediately afterwards.
+    # * A removeRows() implementation must call beginRemoveRows() before the
+    #   rows are removed from the data structure, and it must call endRemoveRows()
+    #   immediately afterwards.
+    # * A removeColumns() implementation must call beginRemoveColumns() before the
+    #   columns are removed from the data structure, and it must call
+    #   endRemoveColumns() immediately afterwards.
+
+    # http://doc.trolltech.com/4.6/model-view-model-subclassing.html
+    # http://doc.trolltech.com/4.6/qabstracttablemodel.html
+
 class SectionPoint(QGraphicsEllipseItem):
     def __init__(self, window, index, data):
         self.window = window
@@ -79,18 +140,14 @@ class Main(QMainWindow):
 
     def itemChanged(self, index):
         coord = self.sezlist[index].coord
-        self.viewTable(coord)
+        self.sectionModel = SectionModel(coord)
+        self.ui.tableSectionCoord.setModel(self.sectionModel)
+
+        self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
         self.drawSection(coord)
 
-    def viewTable(self, array):
-        # Let's do something interesting: load section coordinates
-        # into our table widget
-        self.ui.tableSectionCoord.setRowCount(len(array))
-        for i, row in enumerate(array):
-            for j, numb in enumerate(row):
-                item = QTableWidgetItem()
-                item.setText(str(array[i][j]))
-                self.ui.tableSectionCoord.setItem(i,j,item)
+    def dataModelChanged(self, index, index2):
+        self.drawSection(self.sectionModel.array)
 
     def drawSection(self, array):
         self.scene.clear()
@@ -100,7 +157,6 @@ class Main(QMainWindow):
         r = 5
         i = 0
         pen = QPen(QColor(150, 0, 0))
-
 
         pnt0 = SectionPoint(self, i, array[0])
         self.scene.addItem(pnt0)
