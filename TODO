@@ -1,0 +1,34 @@
+TODO
+========
+
+
+To Do Gui:
+------------
+
+* highlight different roughness in the section viewer, with different color,
+  and with zigzag line (/\/\/\) [priority: high]
+* 3D viewer, not usefull but cool! [prioriry: low]
+* View all sections in one big table like: [priority: medium]
+
+    +--------------+---+---+---+----+
+    | section name | X | Y | Z | Ks |
+    +--------------+---+---+---+----+
+    |    ...       | . | . | . | .. |
+
+* Change or add View, remove X column, and reverse column with row
+
+    +----+----+----+----+----+-----+
+    | Y  |    |    |    |    |     |
+    +----+----+----+----+----+-----+
+    | Z  |    |    |    |    |     | 
+    +----+----+----+----+----+-----+
+    | ks |    |    |    |    |     |
+    +----+----+----+----+----+-----+
+
+To Do Core:
+------------
+
+Import/Export
+* Add possibility to export in csv, vario [priority: medium]
+* Add possibility to import from csv, vario [priority: medium]
+
