@@ -179,6 +179,19 @@ class Main(QMainWindow):
             max = max if max > max0 else max0
         return min, max
 
+    def on_action_Run_triggered(self,checked=None):
+        if checked is None: return
+        os.system('./core/fixbed_sw_1D.out')
+
+    def on_lineTabEdit_returnPressed(self, checked=None):
+        # TODO: add validator
+        #    - QLineEdit::setValidator ( const QValidator * v )
+        #      use: QDoubleValidator
+        #    - take selected cel from tableSectionCoordView and set Text like lineEdit input
+        #      selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
+        if checked is None: return
+        print "LINE CHANGE!!!"
+
 
 def main():
     # import a reach for test
