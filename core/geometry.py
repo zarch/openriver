@@ -323,8 +323,9 @@ class Reach:
 
         l = []
         for sez in sectlist:
+            coord = sez.coord[sez.first:-sez.last]
             x = dim -4
-            l.append(sez.coord[0][0:x])
+            l.append(coord[0][0:x])
         array = np.array(l)
         #print array
         a1 = np.delete(array, 0, axis=0)
