@@ -15,12 +15,12 @@ To Do Gui:
     +--------------+---+---+---+----+
     |    ...       | . | . | . | .. |
 
-* Change or add View, remove X column, and reverse column with row
+* Change or add View, remove X column, show X in a separated dialog, and reverse columns with rows
 
     +----+----+----+----+----+-----+
-    | Y  |    |    |    |    |     |
+    | Z  |    |    |    |    |     |
     +----+----+----+----+----+-----+
-    | Z  |    |    |    |    |     | 
+    | Y  |    |    |    |    |     | 
     +----+----+----+----+----+-----+
     | ks |    |    |    |    |     |
     +----+----+----+----+----+-----+
