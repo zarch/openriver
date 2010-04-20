@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main.ui'
+# Form implementation generated from reading ui file 'gui/main.ui'
 #
 # Created: Tue Apr 20 16:55:45 2010
 #      by: PyQt4 UI code generator 4.7.2
@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.sectionGraphics)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 21))
         self.menubar.setObjectName("menubar")
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
@@ -42,8 +42,11 @@ class Ui_MainWindow(object):
         self.actionImport.setObjectName("actionImport")
         self.actionExport = QtGui.QAction(MainWindow)
         self.actionExport.setObjectName("actionExport")
+        self.action_Open = QtGui.QAction(MainWindow)
+        self.action_Open.setObjectName("action_Open")
         self.menu_File.addAction(self.actionImport)
         self.menu_File.addAction(self.actionExport)
+        self.menu_File.addAction(self.action_Open)
         self.menubar.addAction(self.menu_File.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -55,4 +58,5 @@ class Ui_MainWindow(object):
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "Import", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_Open.setText(QtGui.QApplication.translate("MainWindow", "&Open", None, QtGui.QApplication.UnicodeUTF8))
 
