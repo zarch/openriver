@@ -60,6 +60,20 @@ class SectionModel(QAbstractTableModel):
                 return super(SectionModel, self).headerData(col, orientation, role)
         return QVariant()
 
+    def update(self, row, point):
+        y = self.index(row, 1)
+        z = self.index(row, 2)
+        # TODO: new_y and new_z seem totally wrong!
+        #new_y = self.array[y.row()][y.column()] + point.x()
+        #new_z = self.array[z.row()][z.column()] - point.y()
+        print repr(new_y), repr(new_z)
+        # TODO: calling setData would cause a loop, but the latter wouldn't
+        #+      update the graph..
+        ##self.setData(y, QVariant(new_y))
+        ##self.setData(z, QVariant(new_z))
+        #self.array[y.row()][y.column()] += point.x()
+        #self.array[z.row()][z.column()] -= point.y()
+
     # Models that provide interfaces to resizable data structures can provide
     # implementations of insertRows(), removeRows(), insertColumns(), and
     # removeColumns(). When implementing these functions, it is important to
@@ -81,8 +95,12 @@ class SectionModel(QAbstractTableModel):
     # http://doc.trolltech.com/4.6/model-view-model-subclassing.html
     # http://doc.trolltech.com/4.6/qabstracttablemodel.html
 
-class SectionPoint(QGraphicsEllipseItem):
+class SectionPoint(QGraphicsWidget):
+    pointMoved = pyqtSignal((int, QPointF))
+    #pointEndMoved = pyqtSignal((int, QPointF))
+
     def __init__(self, window, index, data):
+        print repr("INIT")
         self.window = window
         self.row = index
 
@@ -92,14 +110,35 @@ class SectionPoint(QGraphicsEllipseItem):
         self.bbox = QRectF(y-r, -z-r, 2*r, 2*r)
         self.point = QPointF(y, -z)
 
-        super(SectionPoint, self).__init__(self.bbox)
-        self.setBrush(QBrush(QColor(0, 0, 150)))
+        super(SectionPoint, self).__init__()
+        self.setGeometry(self.bbox)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag(0x800)) # ItemSendsGeometryChanges
+        self.setPos(0, 0)
 
     def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemSelectedChange:
+        if change == super(SectionPoint, self).ItemSelectedChange:
             self.window.ui.tableSectionCoord.selectRow(self.row)
+        elif change == super(SectionPoint, self).ItemPositionChange:
+            self.pointMoved.emit(self.row, value.toPointF())
+        # TODO: would this work? (instead of going crazy with model.update())
+        #elif change == super(SectionPoint, self).ItemPositionHasChanged:
+            #self.pointEndMoved.emit(self.row, value.toPointF())
         return super(SectionPoint, self).itemChange(change, value)
+
+    def shape(self):
+        path = QPainterPath()
+        path.addEllipse(self.bbox)
+        return path
+
+    def boundingRect(self):
+        return self.bbox
+
+    def paint(self, painter, option, widget=0):
+        painter.setPen(Qt.black)
+        painter.setBrush(Qt.blue)
+        painter.drawRoundedRect(self.bbox, 5, 5)
 
 # Create a class for our main window
 class Main(QMainWindow):
@@ -187,6 +226,11 @@ class Main(QMainWindow):
             pen.setStyle(dashstyle[4-cl])
         return pen
 
+    def graphPointMoved(self, row, point):
+        self.sectionModel.update(row, point)
+        # TODO: this would cause a loop
+        #self.drawSection(self.sectionModel.array)
+
     def drawSection(self, array):
         self.scene.clear()
         r = 5
@@ -194,12 +238,15 @@ class Main(QMainWindow):
         pen = QPen(QColor(0, 0, 0))
         # initialize first point
         pnt0 = SectionPoint(self, i, array[0])
+        self.connect(pnt0, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
         # get firs ks
         x, y, z, ks = array[0]
         self.scene.addItem(pnt0)
         for data in array[1:]:
             i += 1
             pnt1 = SectionPoint(self, i, data)
+            self.connect(pnt1, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+
             # change pen property
             pen0 = self.getColorStyle(ks, pen)
             self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
