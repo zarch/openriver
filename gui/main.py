@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui/main.ui'
+# Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Mon Apr 19 11:34:23 2010
+# Created: Tue Apr 20 07:53:56 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,16 +15,15 @@ class Ui_MainWindow(object):
         MainWindow.resize(653, 597)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        self.verticalLayout = QtGui.QVBoxLayout(self.centralwidget)
+        self.verticalLayout.setObjectName("verticalLayout")
         self.splitter = QtGui.QSplitter(self.centralwidget)
-        self.splitter.setGeometry(QtCore.QRect(0, 0, 651, 192))
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.listSections = QtGui.QListWidget(self.splitter)
-        self.listSections.setMaximumSize(QtCore.QSize(200, 16777215))
         self.listSections.setObjectName("listSections")
         self.tableSectionCoord = QtGui.QTableWidget(self.splitter)
         self.tableSectionCoord.setMinimumSize(QtCore.QSize(450, 0))
-        self.tableSectionCoord.setMaximumSize(QtCore.QSize(256, 16777215))
         self.tableSectionCoord.setAlternatingRowColors(True)
         self.tableSectionCoord.setObjectName("tableSectionCoord")
         self.tableSectionCoord.setColumnCount(4)
@@ -38,17 +37,13 @@ class Ui_MainWindow(object):
         item = QtGui.QTableWidgetItem()
         self.tableSectionCoord.setHorizontalHeaderItem(3, item)
         self.tableSectionCoord.horizontalHeader().setCascadingSectionResizes(True)
-        self.splitter_2 = QtGui.QSplitter(self.splitter)
-        self.splitter_2.setOrientation(QtCore.Qt.Vertical)
-        self.splitter_2.setObjectName("splitter_2")
-        self.widget = QtGui.QWidget(self.splitter_2)
-        self.widget.setObjectName("widget")
+        self.verticalLayout.addWidget(self.splitter)
         self.sectionGraphics = QtGui.QGraphicsView(self.centralwidget)
-        self.sectionGraphics.setGeometry(QtCore.QRect(0, 200, 651, 341))
         self.sectionGraphics.setObjectName("sectionGraphics")
+        self.verticalLayout.addWidget(self.sectionGraphics)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 22))
         self.menubar.setObjectName("menubar")
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
