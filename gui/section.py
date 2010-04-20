@@ -128,7 +128,8 @@ class Main(QMainWindow):
         self.ksmin, self.ksmax = ksmin, ksmax
 
     def itemChanged(self, index):
-        coord = self.sezlist[index].coord
+        sect = self.sezlist[index]
+        coord = sect.coord[sect.first:-sect.last]
         self.sectionModel = SectionModel(coord)
         self.ui.tableSectionCoord.setModel(self.sectionModel)
 
