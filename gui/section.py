@@ -22,21 +22,40 @@ class SectionModel(QAbstractTableModel):
         super(SectionModel, self).__init__()
         self.array = array
 
-    def rowCount(self, parent):
+    def rowCount(self, parent=QModelIndex()):
         return len(self.array)
 
-    def columnCount(self, parent):
+    def columnCount(self, parent=QModelIndex()):
         return max(map(len, self.array))
 
-    def data(self, index, role):
-        # TODO: to be subclassed
-        pass
+    def data(self, index, role=Qt.DisplayRole):
+        if index.isValid() and role == Qt.DisplayRole:
+            ret = self.array[index.row()][index.column()]
+            # TODO: with "float()", it doesn't show any decimal, if ".0"
+            return QVariant(str(ret))
+        return QVariant()
 
-    def headerData(self, section, orientation, role):
-        # TODO: doesn't work?
-        ##headers = QHeaderView()
+    def setData(self, index, value, role=Qt.EditRole):
+        if index.isValid() and role == Qt.EditRole:
+            self.array[index.row()][index.column()] = float(value.toDouble()[0])
+            # TODO: should update the point too
+            return True
+        return False
+
+    def flags(self, index):
+        ret = super(SectionModel, self).flags(index)
+        ret |= Qt.ItemIsEditable
+        return ret
+
+    def headerData(self, col, orientation, role=Qt.DisplayRole):
         sections = ["x", "y", "z", "ks"]
-        return sections[section]
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                return QVariant(sections[col])
+            elif orientation == Qt.Vertical:
+                #return QVariant(col + 1)
+                return super(SectionModel, self).headerData(col, orientation, role)
+        return QVariant()
 
     # Models that provide interfaces to resizable data structures can provide
     # implementations of insertRows(), removeRows(), insertColumns(), and
@@ -77,6 +96,7 @@ class SectionPoint(QGraphicsEllipseItem):
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
             self.window.ui.tableSectionCoord.selectRow(self.row)
+            self.window.ui.tableSectionCoordView.selectRow(self.row)
         return super(SectionPoint, self).itemChange(change, value)
 
 # Create a class for our main window
@@ -135,7 +155,6 @@ class Main(QMainWindow):
                 self.ui.tableSectionCoord.setItem(i,j,item)
         self.sectionModel = SectionModel(array)
         self.ui.tableSectionCoordView.setModel(self.sectionModel)
-        self.ui.tableSectionCoordView.horizontalHeader().setVisible(True)
 
     def drawSection(self, array):
         self.scene.clear()
