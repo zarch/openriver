@@ -96,7 +96,6 @@ class SectionPoint(QGraphicsEllipseItem):
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
             self.window.ui.tableSectionCoord.selectRow(self.row)
-            self.window.ui.tableSectionCoordView.selectRow(self.row)
         return super(SectionPoint, self).itemChange(change, value)
 
 # Create a class for our main window
@@ -142,24 +141,13 @@ class Main(QMainWindow):
     def itemChanged(self, index):
         coord = self.sezlist[index].coord
         self.sectionModel = SectionModel(coord)
-        self.ui.tableSectionCoordView.setModel(self.sectionModel)
+        self.ui.tableSectionCoord.setModel(self.sectionModel)
 
         self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
-        self.viewTable(coord)
         self.drawSection(coord)
 
     def dataModelChanged(self, index, index2):
         self.drawSection(self.sectionModel.array)
-
-    def viewTable(self, array):
-        # Let's do something interesting: load section coordinates
-        # into our table widget
-        self.ui.tableSectionCoord.setRowCount(len(array))
-        for i, row in enumerate(array):
-            for j, numb in enumerate(row):
-                item = QTableWidgetItem()
-                item.setText(str(array[i][j]))
-                self.ui.tableSectionCoord.setItem(i,j,item)
 
     def drawSection(self, array):
         self.scene.clear()

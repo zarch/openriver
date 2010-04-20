@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue Apr 20 08:04:26 2010
+# Created: Tue Apr 20 16:55:45 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -22,25 +22,9 @@ class Ui_MainWindow(object):
         self.splitter.setObjectName("splitter")
         self.listSections = QtGui.QListWidget(self.splitter)
         self.listSections.setObjectName("listSections")
-        self.tableSectionCoord = QtGui.QTableWidget(self.splitter)
-        self.tableSectionCoord.setMinimumSize(QtCore.QSize(450, 0))
-        self.tableSectionCoord.setAlternatingRowColors(True)
+        self.tableSectionCoord = QtGui.QTableView(self.splitter)
         self.tableSectionCoord.setObjectName("tableSectionCoord")
-        self.tableSectionCoord.setColumnCount(4)
-        self.tableSectionCoord.setRowCount(0)
-        item = QtGui.QTableWidgetItem()
-        self.tableSectionCoord.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
-        self.tableSectionCoord.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
-        self.tableSectionCoord.setHorizontalHeaderItem(2, item)
-        item = QtGui.QTableWidgetItem()
-        self.tableSectionCoord.setHorizontalHeaderItem(3, item)
-        self.tableSectionCoord.horizontalHeader().setCascadingSectionResizes(True)
         self.verticalLayout.addWidget(self.splitter)
-        self.tableSectionCoordView = QtGui.QTableView(self.centralwidget)
-        self.tableSectionCoordView.setObjectName("tableSectionCoordView")
-        self.verticalLayout.addWidget(self.tableSectionCoordView)
         self.sectionGraphics = QtGui.QGraphicsView(self.centralwidget)
         self.sectionGraphics.setObjectName("sectionGraphics")
         self.verticalLayout.addWidget(self.sectionGraphics)
@@ -68,10 +52,6 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "openriver", None, QtGui.QApplication.UnicodeUTF8))
-        self.tableSectionCoord.horizontalHeaderItem(0).setText(QtGui.QApplication.translate("MainWindow", "X", None, QtGui.QApplication.UnicodeUTF8))
-        self.tableSectionCoord.horizontalHeaderItem(1).setText(QtGui.QApplication.translate("MainWindow", "Y", None, QtGui.QApplication.UnicodeUTF8))
-        self.tableSectionCoord.horizontalHeaderItem(2).setText(QtGui.QApplication.translate("MainWindow", "Z", None, QtGui.QApplication.UnicodeUTF8))
-        self.tableSectionCoord.horizontalHeaderItem(3).setText(QtGui.QApplication.translate("MainWindow", "ks", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "Import", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export", None, QtGui.QApplication.UnicodeUTF8))
