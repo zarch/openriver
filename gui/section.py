@@ -95,7 +95,7 @@ class SectionPoint(QGraphicsEllipseItem):
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
-            self.window.ui.tableSectionCoord.selectRow(self.row)
+            #self.window.ui.tableSectionCoord.selectRow(self.row)
             self.window.ui.tableSectionCoordView.selectRow(self.row)
         return super(SectionPoint, self).itemChange(change, value)
 
@@ -145,7 +145,7 @@ class Main(QMainWindow):
         self.ui.tableSectionCoordView.setModel(self.sectionModel)
 
         self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
-        self.viewTable(coord)
+#        self.viewTable(coord)
         self.drawSection(coord)
 
     def dataModelChanged(self, index, index2):
@@ -190,6 +190,19 @@ class Main(QMainWindow):
             min = min if min < min0 else min0
             max = max if max > max0 else max0
         return min, max
+
+    def on_action_Run_triggered(self,checked=None):
+        if checked is None: return
+        os.system('./core/fixbed_sw_1D.out')
+
+    def on_lineTabEdit_returnPressed(self, checked=None):
+        # TODO: add validator
+        #    - QLineEdit::setValidator ( const QValidator * v )
+        #      use: QDoubleValidator
+        #    - take selected cel from tableSectionCoordView and set Text like lineEdit input
+        #      selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
+        if checked is None: return
+        print "LINE CHANGE!!!"
 
 
 def main():
