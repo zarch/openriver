@@ -7,10 +7,12 @@ import os,sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.Qt import *
+import numpy as np
 
 # Import the compiled UI module
 from main import Ui_MainWindow
 from importOri import Ui_importORI
+
 
 # Import geometry from core
 from sys import path
@@ -124,8 +126,9 @@ class Main(QMainWindow):
         float_validator = QDoubleValidator(-999999.0, 999999.0, 3, self.edit)
         self.edit.setValidator(float_validator)
 
-        ksmin, ksmax = self.minmax_ks()
-        self.ksmin, self.ksmax = ksmin, ksmax
+        self.ksmin, self.ksmax = self.minmax_ks()
+        # define how section line should be draw
+        self.kslinestyle = 'color:width:dash' # 'color:width:dash:zigzag'
 
     def itemChanged(self, index):
         sect = self.sezlist[index]
@@ -139,20 +142,70 @@ class Main(QMainWindow):
     def dataModelChanged(self, index, index2):
         self.drawSection(self.sectionModel.array)
 
+    def classify(self, ratio, numberOfClass):
+        """
+        Return classification of a number given the number of class
+
+        >>> classify(1., 5)
+        4
+        >>> classify(0., 5)
+        0
+        >>> classify(0.3, 5)
+        1
+        >>> classify(0.5, 5)
+        2
+        """
+        cl = 0
+        pas = 1./numberOfClass
+        limit = np.array([i for i in range(numberOfClass)]) * pas
+        print '='*40
+        print limit
+        for i, l in enumerate(limit):
+            if ratio >= l:
+                print ratio, l, i
+                cl = i
+        print 'cl is:', cl
+        return cl
+
+
+    def getColorStyle(self, ks, pen):
+        # Fraction to choose color and line 'color:width:dash:zigzag'
+        r = (ks - self.ksmin)/(self.ksmax - self.ksmin)
+        # classification in 5 different class
+        cl = self.classify(r, 5)
+        print 'r is:%s\nks is:%s\nclass is %s' % (r, ks, str(cl))
+        if 'color' in self.kslinestyle:
+            pen.setColor(QColor(int(250*(1-r)), 0, 0))
+        if 'width' in self.kslinestyle:
+            pen.setWidth(4-cl)
+        if 'dash' in self.kslinestyle:
+            dashstyle = {0 : Qt.SolidLine,
+                         1 : Qt.DashLine,
+                         2 : Qt.DashDotLine,
+                         3 : Qt.DashDotDotLine,
+                         4 : Qt.DotLine}
+            pen.setStyle(dashstyle[4-cl])
+        return pen
+
     def drawSection(self, array):
         self.scene.clear()
         r = 5
         i = 0
-        pen = QPen(QColor(150, 0, 0))
-
+        pen = QPen(QColor(0, 0, 0))
+        # initialize first point
         pnt0 = SectionPoint(self, i, array[0])
+        # get firs ks
+        x, y, z, ks = array[0]
         self.scene.addItem(pnt0)
         for data in array[1:]:
             i += 1
             pnt1 = SectionPoint(self, i, data)
-            self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen)
+            # change pen property
+            pen0 = self.getColorStyle(ks, pen)
+            self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
             self.scene.addItem(pnt1)
             pnt0 = pnt1
+            x, y, z, ks = data
 
     def minmax_ks(self):
         """Return min and max of ks looking from all sections"""
@@ -193,6 +246,7 @@ class Main(QMainWindow):
         for cel in cellist:
             self.sectionModel.setData(cel, newvalue)
         self.edit.clear()
+
 
 
 
