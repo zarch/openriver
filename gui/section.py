@@ -63,10 +63,8 @@ class SectionModel(QAbstractTableModel):
     def update(self, row, point):
         y = self.index(row, 1)
         z = self.index(row, 2)
-        # TODO: new_y and new_z seem totally wrong!
         new_y = float(self.array[y.row()][y.column()] + point.x())
         new_z = float(self.array[z.row()][z.column()] - point.y())
-        print repr(new_y), repr(new_z)
         # TODO: calling setData would cause a loop, but the latter wouldn't
         #+      update the graph..
         self.setData(y, QVariant(new_y))
@@ -120,7 +118,7 @@ class SectionPoint(QGraphicsWidget):
         if change == super(SectionPoint, self).ItemSelectedChange:
             self.window.ui.tableSectionCoord.selectRow(self.row)
         elif change == super(SectionPoint, self).ItemPositionChange:
-            self.pointMoved.emit(self.row, value.toPointF())
+            self.pointMoved.emit(self.row, self.mapFromScene(value.toPointF()))
         # TODO: would this work? (instead of going crazy with model.update())
         #elif change == super(SectionPoint, self).ItemPositionHasChanged:
             #self.pointEndMoved.emit(self.row, value.toPointF())
