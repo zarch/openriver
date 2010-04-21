@@ -167,7 +167,6 @@ class Main(QMainWindow):
         print 'cl is:', cl
         return cl
 
-
     def getColorStyle(self, ks, pen):
         # Fraction to choose color and line 'color:width:dash:zigzag'
         r = (ks - self.ksmin)/(self.ksmax - self.ksmin)
@@ -247,13 +246,12 @@ class Main(QMainWindow):
             self.sectionModel.setData(cel, newvalue)
         self.edit.clear()
 
-class SectionEditor(QtGui.QWidget):
-     def __init__(self,parent,task=None):
-         QtGui.QWidget.__init__(self,parent)
+class SectionEditor(QWidget):
+     def __init__(self, parent, task=None):
+         super(SectionEditor, self).__init__(parent)
 
-         self.ui=Ui_EditSection()
+         self.ui = Ui_EditSection()
          self.ui.setupUi(self)
-
 
 def main():
     # import a reach for test
@@ -261,11 +259,10 @@ def main():
     river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
 
     app = QApplication(sys.argv)
-    window=Main(river.sections)
+    window = Main(river.sections)
     window.show()
     # It's exec_ because exec is a reserved word in Python
     sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()
