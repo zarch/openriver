@@ -64,13 +64,13 @@ class SectionModel(QAbstractTableModel):
         y = self.index(row, 1)
         z = self.index(row, 2)
         # TODO: new_y and new_z seem totally wrong!
-        #new_y = self.array[y.row()][y.column()] + point.x()
-        #new_z = self.array[z.row()][z.column()] - point.y()
+        new_y = float(self.array[y.row()][y.column()] + point.x())
+        new_z = float(self.array[z.row()][z.column()] - point.y())
         print repr(new_y), repr(new_z)
         # TODO: calling setData would cause a loop, but the latter wouldn't
         #+      update the graph..
-        ##self.setData(y, QVariant(new_y))
-        ##self.setData(z, QVariant(new_z))
+        self.setData(y, QVariant(new_y))
+        self.setData(z, QVariant(new_z))
         #self.array[y.row()][y.column()] += point.x()
         #self.array[z.row()][z.column()] -= point.y()
 
@@ -100,7 +100,6 @@ class SectionPoint(QGraphicsWidget):
     #pointEndMoved = pyqtSignal((int, QPointF))
 
     def __init__(self, window, index, data):
-        print repr("INIT")
         self.window = window
         self.row = index
 
@@ -175,7 +174,7 @@ class Main(QMainWindow):
         self.sectionModel = SectionModel(coord)
         self.ui.tableSectionCoord.setModel(self.sectionModel)
 
-        self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
+        #self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
         self.drawSection(coord)
 
     def dataModelChanged(self, index, index2):
