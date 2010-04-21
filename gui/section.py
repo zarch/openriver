@@ -12,7 +12,7 @@ import numpy as np
 # Import the compiled UI module
 from main import Ui_MainWindow
 from importOri import Ui_importORI
-
+from editPoints import Ui_EditSection
 
 # Import geometry from core
 from sys import path
@@ -247,7 +247,12 @@ class Main(QMainWindow):
             self.sectionModel.setData(cel, newvalue)
         self.edit.clear()
 
+class SectionEditor(QtGui.QWidget):
+     def __init__(self,parent,task=None):
+         QtGui.QWidget.__init__(self,parent)
 
+         self.ui=Ui_EditSection()
+         self.ui.setupUi(self)
 
 
 def main():
