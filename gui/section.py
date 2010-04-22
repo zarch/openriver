@@ -11,13 +11,14 @@ import numpy as np
 
 # Import the compiled UI module
 from main import Ui_MainWindow
-from importOri import Ui_importORI
+from importOri import Ui_ImportOri
 from editPoints import Ui_EditSection
+from viewSimulation import Ui_viewSimulation
 
 # Import geometry from core
 from sys import path
-from os.path import join
-path.append(join('..','core'))
+from os.path import join as joinpath
+path.append(joinpath('..','core'))
 import geometry as geo
 
 class SectionModel(QAbstractTableModel):
@@ -132,7 +133,7 @@ class Main(QMainWindow):
 
     def itemChanged(self, index):
         sect = self.sezlist[index]
-        coord = sect.coord[sect.first:-sect.last]
+        coord = sect.data
         self.sectionModel = SectionModel(coord)
         self.ui.tableSectionCoord.setModel(self.sectionModel)
 
@@ -211,7 +212,7 @@ class Main(QMainWindow):
         min = 0
         max = 0
         for s in self.sezlist:
-            kslist = s.coord.T[3]
+            kslist = s.data.T[3]
             min0 = kslist.min()
             max0 = kslist.max()
             min = min if min < min0 else min0
@@ -247,16 +248,46 @@ class Main(QMainWindow):
         self.edit.clear()
 
 class SectionEditor(QWidget):
-     def __init__(self, parent, task=None):
-         super(SectionEditor, self).__init__(parent)
+    def __init__(self, parent, task=None):
+        super(SectionEditor, self).__init__(parent)
 
-         self.ui = Ui_EditSection()
-         self.ui.setupUi(self)
+        self.ui = Ui_EditSection()
+        self.ui.setupUi(self)
+
+class ViewSimulation1D(QWidget):
+    def __init__(self, parent, sectionlist=None):
+        super(ViewSimulation1D, self).__init__(parent)
+
+        self.ui = Ui_ViewSimulation()
+        self.ui.setupUi(self)
+
+        self.sectionlist = sectionlist
+
+        self.scene = QGraphicsScene(self)
+        self.ui.GraphicSimulation1D.setScene(self.scene)
+
+    def drawLines(self, index):
+        """Generic function to add line to the scene, specify index (for examples, min, banks,)"""
+        #x0, y0, z0, ks0 = sectionlist[0].data[index]
+        #pnt0 = QPointF(x0, z0)
+        points = []
+        for sect in sectionlist:
+            data = sect.data
+            ground = data[sect.min]
+            water = sect.watersurf[t]
+            bank_l = data[0]
+            bank_r = data[-1]
+            points.append([sect.x, ground, water, bank_l, bank_r])
+            #points.append(QPointF(x1, z1))
+            #self.scene.addLine(QLineF(pnt0, pnt1), pen)
+        return points
+
+
 
 def main():
     # import a reach for test
     river = geo.Reach()
-    river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
+    river.importFileOri('../test/test1/sections.ori', '../test/test1/points.ori')
 
     app = QApplication(sys.argv)
     window = Main(river.sections)
