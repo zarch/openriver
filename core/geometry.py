@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import re
+from os.path import join as joinpath
 
 # section example
 sec_rectangular=[(0, 0), (0, -2), (10, -2), (10, 0)]
@@ -28,22 +29,26 @@ class Section:
     sect.addSegment(sect.yzcoord[0:2], 35)
     sect.addSegment(sect.yzcoord[2:], 40)
     """
-    def __init__(self, name=None, xaxis=None,
-        yzcoord=None, first=0,  last=-1,  erodible=True,
-        roughness=None, discontinuity=False,
-        subsection=False):
+    def __init__(self, name=None, data=None,
+                 first=0,  last=-1,  erodible=True,
+                 roughness=None, discontinuity=False,
+                 subsection=False, watersurface=None):
         self.name = name
-        self.xaxis = xaxis
-        self.coord = np.array(yzcoord)
+        self.data =  np.array(data)
+        self.xcoord = self.data.T[0]
+        self.yzcoord = self.data.T[1:3]
         self.first = first
-        self.last = -last
-        minimum = self.coord[1].argmin()
+        self.last = last
+        minimum = self.yzcoord[1].argmin()
         self.min = minimum
+
         self.erodible = erodible
         self.roughness = roughness
         self.discontinuity = discontinuity
         self.subsection = subsection
         self.segment = []
+
+        self.watersurf = watersurface
 
     def __str__(self):
         return str(self.name)
@@ -109,22 +114,21 @@ class Section:
                    [  1.94887253e+01,   7.45000000e+02]])
 
         """
-        coordtrasp=self.coord.T
-        lefttomin=self.coord[1][:self.min+1]
+        lefttomin=self.yzcoord[1][:self.min+1]
         # left point
         lpnt = self.firstPointAfter_h(lefttomin[::-1], h)
         # find index of left point
         l_pnt = self.min - lpnt
         # find left intersection
-        l_intersect = self.intersection(coordtrasp[l_pnt], coordtrasp[l_pnt+1], h)
+        l_intersect = self.intersection(self.yzcoord.T[l_pnt], self.yzcoord.T[l_pnt+1], h)
         # right point
-        rpnt = self.firstPointAfter_h(self.coord[1][self.min:], h)
+        rpnt = self.firstPointAfter_h(self.yzcoord[1][self.min:], h)
         # find index of right point
         r_pnt = self.min + rpnt
         # find right intersection
-        r_intersect = self.intersection(coordtrasp[r_pnt], coordtrasp[r_pnt-1], h)
+        r_intersect = self.intersection(self.yzcoord.T[r_pnt], self.yzcoord.T[r_pnt-1], h)
         # make new section geometries
-        sez = coordtrasp[l_pnt+1:r_pnt]
+        sez = self.yzcoord.T[l_pnt+1:r_pnt]
         # Add left intersection on the top
         sez=np.insert(sez, [0,], l_intersect,axis=0)
         # Add rightht intersection on the bottom
@@ -134,9 +138,8 @@ class Section:
     def area(self, sez):
         """Return area given a section take from getSect
 
-            >>> sez=section.getSect(745)
-            >>> section.area(sez)
-            41.448496601989973
+            >>> section.area(yzcoordT)
+            41.448496630204318
         """
         # find area below water line
         area_h2o = (sez[-1][0]-sez[0][0])*sez[0][1]
@@ -147,9 +150,9 @@ class Section:
     def wetBorder(self,  sez):
         """Calculate web border from a given section
 
-            >>> sez=section.getSect(745)
-            >>> section.wetBorder(sez)
-            23.557497596153816
+            >>> section.wetBorder(yzcoordT)
+            23.557497620999964
+
         """
         # calculate with pitagora: sqrt(dx²+dy²)
         sez1=np.delete(sez, 0, axis=0)
@@ -176,15 +179,15 @@ class Reach:
     """
     def __init__(self,  sections = []):
         self.sections = sections
-        #self.length = self.sections[-1].coord[0]-self.sections[0].coord[0] if self.sections else None
+        self.workingpath = None
 
     def __str__(self):
         slist = []
         for s in self.sections:
             separetor = '='*50
-            sectname = s.name + ': ' + str(len(s.coord))
-            coord = str(s.coord)
-            slist.append("\n".join([separetor, sectname, coord]))
+            sectname = s.name + ': ' + str(len(s.yzcoord))
+            data = str(s.data)
+            slist.append("\n".join([separetor, sectname, data]))
         return "\n".join(slist)
 
     def importFile(self, filename):
@@ -193,12 +196,12 @@ class Reach:
         readerpipe = csv.reader(geometryFile, delimiter = "\t")
         for row in readerpipe:
             datalist.append(row)
-        xaxis = datalist[0][0]
+        xcoord = datalist[0][0]
         npoints = datalist[1][0]
         nsegments = datalist[1][1]
         print("ok")
 
-    def importFileORI(self, sectionfilename, pointsfilename):
+    def importFileOri(self, sectionfilename, pointsfilename):
         """section.ori
         -------------------------
         301
@@ -221,7 +224,7 @@ class Reach:
         5.00000  50.00000 100.00000 100.00000
 
         >>> river = Reach()
-        >>> river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
+        >>> river.importFileOri('../test/importexport/sections.ori', '../test/importexport/points.ori')
         >>> len(river.sections)
         301
 
@@ -250,7 +253,7 @@ class Reach:
             #print 'Numero punti sezione: %s\nSezione: %s\nPrimoPunto: %s\nPrimoPuntoH: %s\nUltimoPunto: %s\nUltimoPuntoH: %s\n' % (m['points_num'], m['sez_name'], m['first_point'],m['first_point_h'], m['last_point'],m['last_point_h'])
             first += int(m['first_point']) - 1
             last +=  int(m['last_point'])
-            sectionlist.append(Section(name=m['sez_name'], yzcoord=allcoord, first=first, last=last))
+            sectionlist.append(Section(name=m['sez_name'], data=allcoord[first:last], first=int(m['first_point'])-1, last=int(m['last_point'])))
             first = last
         # asign sections attribute
         self.sections = sectionlist
@@ -259,7 +262,7 @@ class Reach:
     def exportFileOri(self, sectionfilename, pointsfilename):
         """
         >>> river = Reach()
-        >>> river.importFileORI('../test/importexport/sections.ori', '../test/importexport/points.ori')
+        >>> river.importFileOri('../test/importexport/sections.ori', '../test/importexport/points.ori')
         >>> river.exportFileOri('../test/importexport/sectionsTEST.ori', '../test/importexport/pointsTEST.ori')
         Start writing: ../test/importexport/sectionsTEST.ori
         Start writing: ../test/importexport/pointsTEST.ori
@@ -269,24 +272,27 @@ class Reach:
         sectionFile = open(sectionfilename, "w")
         print "Start writing: %s" % sectionfilename
         sectionFile.write('%s\n' % len(self.sections))
-        for section in self.sections:
+        for sect in self.sections:
             #301
             #4  sez0001
             #1  100.00000   4  100.00000
-            sectionFile.write('%s %s\n%s %s %s %s\n' % (len(section.coord),
-                                                      section.name,
-                                                      section.first +1,
-                                                      section.coord[section.first][2],
-                                                      section.last,
-                                                      section.coord[section.last][2],))
+            #print sect.data
+            rows = '%s %s\n%s %s %s %s\n' % (len(sect.data),
+                                             sect.name,
+                                             sect.first +1,
+                                             sect.data[sect.first][2],
+                                             sect.last,
+                                             sect.data[sect.last-1][2])
+            #print rows
+            sectionFile.write(rows)
         sectionFile.close()
         print "Start writing: %s" % pointsfilename
         pointsFile = open(pointsfilename, "w")
         for section in self.sections:
             rowlist = []
-            for row in section.coord:
-                rowlist.append(" ".join([str(x) for x in row]))
-            pointsFile.write('%s' % "\n".join([r for r in rowlist]))
+            for row in section.data:
+                rowlist.append(" ".join(['%9.5f' % x for x in row]))
+            pointsFile.write('%s\n' % "\n".join([' %s' % r for r in rowlist]))
         pointsFile.close()
         print "Finish"
 
@@ -297,7 +303,7 @@ class Reach:
     def length(self, sectlist = None,  dim = 3):
         """
         >>> river = Reach()
-        >>> river.importFileORI('../test/test1/sections.ori', '../test/test1/points.ori')
+        >>> river.importFileOri('../test/test1/sections.ori', '../test/test1/points.ori')
 
         to calculate length just only 1D long x
         >>> river.length(dim = 1)
@@ -323,9 +329,12 @@ class Reach:
 
         l = []
         for sez in sectlist:
-            coord = sez.coord[sez.first:-sez.last]
+            #print 'sez.first:', sez.first
+            #print 'sez.last:', sez.last
+            #print '-', sez.data[sez.first:sez.last]
+            data = sez.data[sez.first:sez.last]
             x = dim -4
-            l.append(coord[0][0:x])
+            l.append(data[0][0:x])
         array = np.array(l)
         #print array
         a1 = np.delete(array, 0, axis=0)
@@ -335,24 +344,26 @@ class Reach:
         #print delta
         return np.sum(np.sqrt(delta * delta))
 
-#    def length(self, side='l'):
-#        """
-#        >>> river.length()
-#        1500
-#
-#        """
-#        if side == 'l':
-#            first_s=self.sections[0]
-#            last_s=self.sections[-1]
-#        #print str(first_s), str(last_s)
-#        return last_s.coord[0][0] - first_s.coord[0][0]
-
+    def readSimulation(self):
+        pass
 
 
 if __name__ == "__main__":
     import doctest
-    sezdata=np.array([[0.000, 0.930,  7.190, 12.590, 18.080, 18.910, 20.070],
-[747.27000, 742.79000, 742.77000, 742.75000, 742.73000, 742.73000, 747.28000]])
-    section=Section(yzcoord=sezdata)
+    yzcoordT=np.array([[  4.71227679e-01,   7.45000000e+02],\
+                      [  9.30000000e-01,   7.42790000e+02],\
+                      [  7.19000000e+00,   7.42770000e+02],\
+                      [  1.25900000e+01,   7.42750000e+02],\
+                      [  1.80800000e+01,   7.42730000e+02],\
+                      [  1.89100000e+01,   7.42730000e+02],\
+                      [  1.94887253e+01,   7.45000000e+02]])
+    sezdata=np.array([[   0.  ,    0.  ,  747.27,   50.  ],
+                      [   0.  ,    0.93,  742.79,   50.  ],
+                      [   0.  ,    7.19,  742.77,   50.  ],
+                      [   0.  ,   12.59,  742.75,   50.  ],
+                      [   0.  ,   18.08,  742.73,   50.  ],
+                      [   0.  ,   18.91,  742.73,   50.  ],
+                      [   0.  ,   20.07,  747.28,   50.  ]])
+    section=Section(data=sezdata)
     doctest.testmod()
 
