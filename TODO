@@ -5,8 +5,8 @@ TODO
 To Do Gui:
 ------------
 
-* highlight different roughness in the section viewer, with different color,
-  and with zigzag line (/\/\/\) [priority: high]
+* add gui to configure files for the simulation [priorit: high]
+* view result after simulation it’s run [priorit: high]
 * 3D viewer, not usefull but cool! [prioriry: low]
 * View all sections in one big table like: [priority: medium]
 
@@ -29,6 +29,8 @@ To Do Core:
 ------------
 
 Import/Export
+* import simulation output result for each section [priorit: high]
+* import/export vario files [priorit: high]
 * Add possibility to export in csv, vario [priority: medium]
 * Add possibility to import from csv, vario [priority: medium]
 
