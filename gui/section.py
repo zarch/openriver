@@ -93,35 +93,33 @@ class SectionModel(QAbstractTableModel):
     # http://doc.trolltech.com/4.6/model-view-model-subclassing.html
     # http://doc.trolltech.com/4.6/qabstracttablemodel.html
 
+#23:19 <tosky> l'idea è: se è stata cambiata la tabella, viene richiamata la procedura di aggiornamento della scena che sposterà i punti (o ne aggiungerà di nuovi, o ne toglierà di vecchi); per evitare che i punti modificati facciano danno, o si evita che emettano il segnale, disconnettendo e riconnettendo il segnale di avvenuto spostamento prima e dopo l'aggiornamento della posizione
+#23:20 -!- imu [~imu@unaffiliated/imu] si è disconnesso [Quit: Software is like sex, better when it's free (Linus Torvalds)]
+#23:20 <tosky> oppure emettendo il segnale con un parametro (bool?) che dice "spostato causa aggiornamento del modello (e lo sai, ti basta un parametro in più nella procedura di aggiornamento della scena)", e quel punto, chiunque gestisca il segnale sa che non deve andare oltre
+#23:21 <dapal> allora
+#23:21 <dapal> io la "procedura di aggiornamento" me la immagino così
+#23:21 <tosky> se, viceversa, è stato fatto clic e trascinato, il punto emetterà il segnale con il parametro (sempre quello) che dice "spostato causa giocherelli col mouse" (l'altro valore), e a quel punto chi riceve sa che deve aggiornare il modello
+#23:21 <tosky> fine
+
 class SectionPoint(QGraphicsWidget):
     pointMoved = pyqtSignal((int, QPointF))
-    #pointEndMoved = pyqtSignal((int, QPointF))
 
     def __init__(self, window, index, data):
         self.window = window
         self.row = index
-
         self.data = data
-        r = 5
-        x, y, z, ks = self.data
-        self.bbox = QRectF(y-r, -z-r, 2*r, 2*r)
-        self.point = QPointF(y, -z)
 
         super(SectionPoint, self).__init__()
-        self.setGeometry(self.bbox)
+        self.updateGeometry(self.data[1], self.data[2])
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag(0x800)) # ItemSendsGeometryChanges
-        self.setPos(0, 0)
 
     def itemChange(self, change, value):
         if change == super(SectionPoint, self).ItemSelectedChange:
             self.window.ui.tableSectionCoord.selectRow(self.row)
         elif change == super(SectionPoint, self).ItemPositionChange:
             self.pointMoved.emit(self.row, self.mapFromScene(value.toPointF()))
-        # TODO: would this work? (instead of going crazy with model.update())
-        #elif change == super(SectionPoint, self).ItemPositionHasChanged:
-            #self.pointEndMoved.emit(self.row, value.toPointF())
         return super(SectionPoint, self).itemChange(change, value)
 
     def shape(self):
@@ -137,11 +135,19 @@ class SectionPoint(QGraphicsWidget):
         painter.setBrush(Qt.blue)
         painter.drawRoundedRect(self.bbox, 5, 5)
 
+    def updateGeometry(self, x, y):
+        r = 5
+        self.bbox = QRectF(x-r, -y-r, 2*r, 2*r)
+        self.point = QPointF(x, -y)
+        self.setGeometry(self.bbox)
+        self.setPos(0, 0)
+
 # Create a class for our main window
 class Main(QMainWindow):
     def __init__(self,  sezlist):
         QMainWindow.__init__(self)
         self.sezlist = sezlist
+        self.sectionModel = None
 
         # This is always the same
         self.ui=Ui_MainWindow()
@@ -169,10 +175,14 @@ class Main(QMainWindow):
     def itemChanged(self, index):
         sect = self.sezlist[index]
         coord = sect.coord[sect.first:-sect.last]
+
+        if self.sectionModel is SectionModel:
+            self.disconnect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
+
         self.sectionModel = SectionModel(coord)
         self.ui.tableSectionCoord.setModel(self.sectionModel)
 
-        #self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
+        self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
         self.drawSection(coord)
 
     def dataModelChanged(self, index, index2):
@@ -194,22 +204,21 @@ class Main(QMainWindow):
         cl = 0
         pas = 1./numberOfClass
         limit = np.array([i for i in range(numberOfClass)]) * pas
-        print '='*40
-        print limit
+        #print '='*40
+        #print limit
         for i, l in enumerate(limit):
             if ratio >= l:
-                print ratio, l, i
+                #print ratio, l, i
                 cl = i
-        print 'cl is:', cl
+        #print 'cl is:', cl
         return cl
-
 
     def getColorStyle(self, ks, pen):
         # Fraction to choose color and line 'color:width:dash:zigzag'
         r = (ks - self.ksmin)/(self.ksmax - self.ksmin)
         # classification in 5 different class
         cl = self.classify(r, 5)
-        print 'r is:%s\nks is:%s\nclass is %s' % (r, ks, str(cl))
+        #print 'r is:%s\nks is:%s\nclass is %s' % (r, ks, str(cl))
         if 'color' in self.kslinestyle:
             pen.setColor(QColor(int(250*(1-r)), 0, 0))
         if 'width' in self.kslinestyle:
@@ -225,31 +234,50 @@ class Main(QMainWindow):
 
     def graphPointMoved(self, row, point):
         self.sectionModel.update(row, point)
-        # TODO: this would cause a loop
-        #self.drawSection(self.sectionModel.array)
+        self.drawSection(self.sectionModel.array)
 
     def drawSection(self, array):
-        self.scene.clear()
-        r = 5
-        i = 0
-        pen = QPen(QColor(0, 0, 0))
-        # initialize first point
-        pnt0 = SectionPoint(self, i, array[0])
-        self.connect(pnt0, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
-        # get firs ks
-        x, y, z, ks = array[0]
-        self.scene.addItem(pnt0)
-        for data in array[1:]:
-            i += 1
-            pnt1 = SectionPoint(self, i, data)
-            self.connect(pnt1, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+        done = []
 
-            # change pen property
-            pen0 = self.getColorStyle(ks, pen)
-            self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
-            self.scene.addItem(pnt1)
-            pnt0 = pnt1
-            x, y, z, ks = data
+        for w in self.scene.items():
+            if isinstance(w, SectionPoint):
+                row = self.sectionModel.array[w.row]
+                if w.point != QPointF(row[1], -row[2]):
+                    self.disconnect(w, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+                    w.updateGeometry(row[1], row[2])
+                    self.connect(w, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+                done.append(w)
+            else:
+                self.scene.removeItem(w)
+
+        if done:
+            # redraw segments
+            p0 = done[0]
+            x, y, z, ks = p0.data
+            pen = QPen(QColor(0, 0, 0))
+            for p in done:
+                pen0 = self.getColorStyle(ks, pen)
+                self.scene.addLine(QLineF(p0.point, p.point), pen0)
+                p0 = p
+                x, y, z, ks = p.data
+        else:
+            i = 0
+            pen = QPen(QColor(0, 0, 0))
+            pnt0 = SectionPoint(self, i, array[0])
+            self.connect(pnt0, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+            x, y, z, ks = array[0]
+            self.scene.addItem(pnt0)
+            for data in array[1:]:
+                i += 1
+                pnt1 = SectionPoint(self, i, data)
+                self.connect(pnt1, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+
+                # change pen property
+                pen0 = self.getColorStyle(ks, pen)
+                self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
+                self.scene.addItem(pnt1)
+                pnt0 = pnt1
+                x, y, z, ks = data
 
     def minmax_ks(self):
         """Return min and max of ks looking from all sections"""
@@ -291,9 +319,9 @@ class Main(QMainWindow):
             self.sectionModel.setData(cel, newvalue)
         self.edit.clear()
 
-class SectionEditor(QtGui.QWidget):
+class SectionEditor(QWidget):
      def __init__(self,parent,task=None):
-         QtGui.QWidget.__init__(self,parent)
+         QWidget.__init__(self,parent)
 
          self.ui=Ui_EditSection()
          self.ui.setupUi(self)
