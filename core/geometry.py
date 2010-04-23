@@ -190,16 +190,79 @@ class Reach:
             slist.append("\n".join([separetor, sectname, data]))
         return "\n".join(slist)
 
-    def importFile(self, filename):
+    def recursiveReadVario(self, datalist):
+        """This function append section to reach.sections"""
+        index = 0
+        # read first line section
+        xcoord,eroded,discontinuity = datalist[index]
+        xcoord = float(xcoord)
+        # go to the second line
+        index+=1
+        # read and trasform str value in integer
+        npoints, nsegments = map(int, datalist[index])
+        #print "x: %4.2f, eroded: %s, discontinuity: %s, npoints: %d, nsegments: %d" % (xcoord, eroded, discontinuity, npoints, nsegments)
+
+        #initialize locals variables
+        yzcoord = []
+        segmens = []
+        endpoints=index+npoints+1
+        endsegments = endpoints+nsegments
+        index+=1
+
+        # start a cicle between points
+        for e in datalist[index:endpoints]:
+            # trasform string in float
+            yz=map(float, e[:2])
+            # add new coordinates to yzcoordinates list
+            yzcoord.append(yz)
+
+        # transform list in a numpy array because in this way is easier
+        # to assign value for ks
+        yzcoord = np.array(yzcoord)
+        # add roughnes column default it is 0
+        kscolumn = np.zeros(shape=(len(yzcoord),1))
+        data = np.append(yzcoord,kscolumn,axis=1)
+
+        # assign KS = 2 to have more readable source
+        KS = 2
+        for e in datalist[endpoints:endsegments]:
+            # trasform string in integer and assign start end and ks
+            start, end, ks = map(int, e)
+            start -= 1
+            data.T[KS][start:end] = ks
+
+        index = endsegments
+
+        # check if discontinuity == True
+        if discontinuity == 't':
+            [[type], [d90], [l], [excavation]] = datalist[index:index+4]
+            index = index + 4
+            type, d90, l, excavation= int(type), int(d90), float(l), float(excavation)
+            #print "type: %d, d90: %d, l: %f, excav: %f" % (type, d90, l, excavation)
+
+        # make new section and append to the reach list
+        self.sections.append(Section(data = data))
+
+        newline = datalist[index]
+        # check if new line is the end of file.
+        if newline == ['-100', '-100', '-100']:
+            print "Finish to import."
+        else:
+            self.recursiveReadVario(datalist[index:])
+
+    def importFileVario(self, filename):
+        """
+        >>> river = Reach()
+        >>> river.importFileVario('../test/importexport/variosection.geo')
+        Finish to import.
+        """
         datalist = []
         geometryFile = open(filename, "r")
-        readerpipe = csv.reader(geometryFile, delimiter = "\t")
-        for row in readerpipe:
-            datalist.append(row)
-        xcoord = datalist[0][0]
-        npoints = datalist[1][0]
-        nsegments = datalist[1][1]
-        print("ok")
+        # make a list of list from the file.
+        for row in geometryFile:
+            datalist.append(row.split())
+        self.recursiveReadVario(datalist)
+
 
     def importFileOri(self, sectionfilename, pointsfilename):
         """section.ori
@@ -258,6 +321,8 @@ class Reach:
         # asign sections attribute
         self.sections = sectionlist
         return
+
+
 
     def exportFileOri(self, sectionfilename, pointsfilename):
         """
