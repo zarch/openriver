@@ -63,14 +63,8 @@ class SectionModel(QAbstractTableModel):
     def update(self, row, point):
         y = self.index(row, 1)
         z = self.index(row, 2)
-        new_y = float(self.array[y.row()][y.column()] + point.x())
-        new_z = float(self.array[z.row()][z.column()] - point.y())
-        # TODO: calling setData would cause a loop, but the latter wouldn't
-        #+      update the graph..
-        self.setData(y, QVariant(new_y))
-        self.setData(z, QVariant(new_z))
-        #self.array[y.row()][y.column()] += point.x()
-        #self.array[z.row()][z.column()] -= point.y()
+        self.setData(y, QVariant(point.x()))
+        self.setData(z, QVariant(point.y()))
 
     # Models that provide interfaces to resizable data structures can provide
     # implementations of insertRows(), removeRows(), insertColumns(), and
@@ -108,9 +102,10 @@ class SectionPoint(QGraphicsWidget):
         self.window = window
         self.row = index
         self.data = data
+        self.r = 5
+        self.movedFromCode = False
 
         super(SectionPoint, self).__init__()
-        self.updateGeometry(self.data[1], self.data[2])
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.GraphicsItemFlag(0x800)) # ItemSendsGeometryChanges
@@ -118,29 +113,28 @@ class SectionPoint(QGraphicsWidget):
     def itemChange(self, change, value):
         if change == super(SectionPoint, self).ItemSelectedChange:
             self.window.ui.tableSectionCoord.selectRow(self.row)
-        elif change == super(SectionPoint, self).ItemPositionChange:
-            self.pointMoved.emit(self.row, self.mapFromScene(value.toPointF()))
         return super(SectionPoint, self).itemChange(change, value)
 
     def shape(self):
         path = QPainterPath()
-        path.addEllipse(self.bbox)
+        path.addEllipse(self.boundingRect())
         return path
 
     def boundingRect(self):
-        return self.bbox
+        bbox = QRectF(-self.r, -self.r, 2*self.r, 2*self.r)
+        return bbox
 
     def paint(self, painter, option, widget=0):
         painter.setPen(Qt.black)
         painter.setBrush(Qt.blue)
-        painter.drawRoundedRect(self.bbox, 5, 5)
+        painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
-    def updateGeometry(self, x, y):
-        r = 5
-        self.bbox = QRectF(x-r, -y-r, 2*r, 2*r)
-        self.point = QPointF(x, -y)
-        self.setGeometry(self.bbox)
-        self.setPos(0, 0)
+    def mouseMoveEvent(self, event):
+        if not self.movedFromCode:
+            #print "moving to ", self.pos(), self.row, event.scenePos(), event.pos()
+            self.pointMoved.emit(self.row, event.scenePos())
+        self.movedFromCode = False
+        return super(SectionPoint, self).mouseMoveEvent(event)
 
 # Create a class for our main window
 class Main(QMainWindow):
@@ -183,7 +177,7 @@ class Main(QMainWindow):
         self.ui.tableSectionCoord.setModel(self.sectionModel)
 
         self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
-        self.drawSection(coord)
+        self.drawSection(self.sectionModel.array)
 
     def dataModelChanged(self, index, index2):
         self.drawSection(self.sectionModel.array)
@@ -234,7 +228,6 @@ class Main(QMainWindow):
 
     def graphPointMoved(self, row, point):
         self.sectionModel.update(row, point)
-        self.drawSection(self.sectionModel.array)
 
     def drawSection(self, array):
         done = []
@@ -242,10 +235,10 @@ class Main(QMainWindow):
         for w in self.scene.items():
             if isinstance(w, SectionPoint):
                 row = self.sectionModel.array[w.row]
-                if w.point != QPointF(row[1], -row[2]):
-                    self.disconnect(w, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
-                    w.updateGeometry(row[1], row[2])
-                    self.connect(w, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+                #print "%s =? %s" % ( w.pos(), QPointF(row[1], row[2]))
+                if w.pos() != QPointF(row[1], row[2]):
+                    w.movedFromCode = True
+                    w.setPos(row[1], row[2])
                 done.append(w)
             else:
                 self.scene.removeItem(w)
@@ -257,10 +250,12 @@ class Main(QMainWindow):
             pen = QPen(QColor(0, 0, 0))
             for p in done:
                 pen0 = self.getColorStyle(ks, pen)
-                self.scene.addLine(QLineF(p0.point, p.point), pen0)
+                self.scene.addLine(QLineF(p0.pos(), p.pos()), pen0)
                 p0 = p
                 x, y, z, ks = p.data
         else:
+           # WRONG: this should be fixed! It could be possible to add new points
+           # so i != 0
             i = 0
             pen = QPen(QColor(0, 0, 0))
             pnt0 = SectionPoint(self, i, array[0])
@@ -274,7 +269,7 @@ class Main(QMainWindow):
 
                 # change pen property
                 pen0 = self.getColorStyle(ks, pen)
-                self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
+                self.scene.addLine(QLineF(pnt0.pos(), pnt1.pos()), pen0)
                 self.scene.addItem(pnt1)
                 pnt0 = pnt1
                 x, y, z, ks = data
