@@ -32,7 +32,8 @@ class Section:
     def __init__(self, name=None, data=None,
                  first=0,  last=-1,  erodible=True,
                  roughness=None, discontinuity=False,
-                 subsection=False, watersurface=None):
+                 subsection=False, watersurface=None,
+                 variotype = None,  d90=None,  variolenght=None):
         self.name = name
         self.data =  np.array(data)
         self.xcoord = self.data.T[0]
@@ -48,7 +49,12 @@ class Section:
         self.subsection = subsection
         self.segment = []
 
+        self.d90 =d90
+        self.variotype = variotype
+        self.varioLenght = variolenght
+
         self.watersurf = watersurface
+
 
     def __str__(self):
         return str(self.name)
@@ -194,13 +200,14 @@ class Reach:
         """This function append section to reach.sections"""
         index = 0
         # read first line section
-        xcoord,eroded,discontinuity = datalist[index]
+        xcoord,e,d = datalist[index]
         xcoord = float(xcoord)
+        erodible = True if e == 't' else False
+        discontinuity= False if d == 'f' else True
         # go to the second line
         index+=1
         # read and trasform str value in integer
         npoints, nsegments = map(int, datalist[index])
-        #print "x: %4.2f, eroded: %s, discontinuity: %s, npoints: %d, nsegments: %d" % (xcoord, eroded, discontinuity, npoints, nsegments)
 
         #initialize locals variables
         yzcoord = []
@@ -234,14 +241,19 @@ class Reach:
         index = endsegments
 
         # check if discontinuity == True
-        if discontinuity == 't':
+        if discontinuity:
             [[type], [d90], [l], [excavation]] = datalist[index:index+4]
             index = index + 4
             type, d90, l, excavation= int(type), int(d90), float(l), float(excavation)
             #print "type: %d, d90: %d, l: %f, excav: %f" % (type, d90, l, excavation)
 
         # make new section and append to the reach list
-        self.sections.append(Section(data = data))
+        self.sections.append(Section(data = data,
+                                     erodible = erodible,
+                                     discontinuity = discontinuity,
+                                     variotype = None if discontinuity == False  else type,
+                                     d90 = None if discontinuity == False  else d90,
+                                     variolenght = None if discontinuity == False  else l,), )
 
         newline = datalist[index]
         # check if new line is the end of file.
@@ -263,6 +275,44 @@ class Reach:
             datalist.append(row.split())
         self.recursiveReadVario(datalist)
 
+
+    def exportFileVario(self, filename):
+        for s in self.sections:
+            x = s.xcoord
+            erod = 't' if s.erodible else 'f'
+            disc = 't' if s.discontinuity else 'f'
+            npoints = int(len(s.data))
+            kslist = s.data.T[2][:-1]
+            segments = []
+            index = 0
+            # initialize segment start and end
+            s_start=0
+            s_end =1
+            while s_end != len(kslist):
+                ks = kslist[s_start]
+                ksnext = kslist[s_end]
+                print ks, ksnext,  s_start, s_end
+                if ks == ksnext:
+                    s_end += 1
+                else:
+                    segments.append('%d %d %d' % (s_start, s_end, ks))
+                    s_start = s_end
+                    s_end += 1
+
+            nsegments = int(len(segments))
+            yzcoord = "\n".join(["%f %f" % tuple(c) for c in s.yzcoord.T])
+            segments = "\n".join(segments)
+            print segments
+            variosection = """%f %s %s
+            %d %d
+            %s
+            %s""" % (x, erod, disc,
+                     npoints, nsegments,
+                     yzcoord,
+                     segments)
+            if discontinuity:
+                dis_str = "%d\n%d\n%f\n%f" % (s.variotype, s.d90, s.l, s.excavation)
+                variosection +=dis_str
 
     def importFileOri(self, sectionfilename, pointsfilename):
         """section.ori
