@@ -11,7 +11,7 @@ import numpy as np
 
 # Import the compiled UI module
 from main import Ui_MainWindow
-from importOri import Ui_ImportOri
+from importOri import Ui_importORI
 from editPoints import Ui_EditSection
 from viewSimulation import Ui_viewSimulation
 
