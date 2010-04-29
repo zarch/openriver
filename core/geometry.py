@@ -33,7 +33,7 @@ class Section:
                  first=0,  last=-1,  erodible=True,
                  roughness=None, discontinuity=False,
                  subsection=False, watersurface=None,
-                 variotype = None,  d90=None,  variolenght=None):
+                 variotype = None,  d90=None,  variolenght=None, varioexcav=None):
         self.name = name
         self.data =  np.array(data)
         self.xcoord = self.data.T[0]
@@ -49,9 +49,11 @@ class Section:
         self.subsection = subsection
         self.segment = []
 
+        # Add this attributs to support vario format
         self.d90 =d90
         self.variotype = variotype
         self.varioLenght = variolenght
+        self.varioexcav = varioexcav
 
         self.watersurf = watersurface
 
@@ -220,18 +222,26 @@ class Reach:
         for e in datalist[index:endpoints]:
             # trasform string in float
             yz=map(float, e[:2])
+            #print e[:2]
             # add new coordinates to yzcoordinates list
             yzcoord.append(yz)
+
+        # add x column to the data array
+        data = np.ones(shape=(len(yzcoord),1))
+        data = data  * xcoord
 
         # transform list in a numpy array because in this way is easier
         # to assign value for ks
         yzcoord = np.array(yzcoord)
+        #print yzcoord
+        # add yzcoord to the data array
+        data = np.append(data,yzcoord,axis=1)
         # add roughnes column default it is 0
         kscolumn = np.zeros(shape=(len(yzcoord),1))
-        data = np.append(yzcoord,kscolumn,axis=1)
+        data = np.append(data,kscolumn,axis=1)
 
-        # assign KS = 2 to have more readable source
-        KS = 2
+        # assign KS = 3 to have more readable source
+        KS = 3
         for e in datalist[endpoints:endsegments]:
             # trasform string in integer and assign start end and ks
             start, end, ks = map(int, e)
@@ -253,7 +263,8 @@ class Reach:
                                      discontinuity = discontinuity,
                                      variotype = None if discontinuity == False  else type,
                                      d90 = None if discontinuity == False  else d90,
-                                     variolenght = None if discontinuity == False  else l,), )
+                                     variolenght = None if discontinuity == False  else l,
+                                     varioexcav = None if discontinuity == False  else excavation,))
 
         newline = datalist[index]
         # check if new line is the end of file.
@@ -277,13 +288,23 @@ class Reach:
 
 
     def exportFileVario(self, filename):
+        """
+        Return a vario file of sections
+        >>> river = Reach()
+        >>> river.importFileVario('../test/importexport/variosection.geo')
+        Finish to import.
+        >>> river.exportFileVario('../test/importexport/variosectionTEST.geo')
+        Finish to export.
+        """
+        sectionVarioFile = open(filename, "w")
         for s in self.sections:
-            x = s.xcoord
+            # Vario take just one x coordinates so we take the first one
+            x = float(s.xcoord[0])
             erod = 't' if s.erodible else 'f'
             disc = 't' if s.discontinuity else 'f'
             npoints = int(len(s.data))
-            kslist = s.data.T[2][:-1]
-            segments = []
+            kslist = s.data.T[3][:-1]
+            segmentslist = []
             index = 0
             # initialize segment start and end
             s_start=0
@@ -291,28 +312,39 @@ class Reach:
             while s_end != len(kslist):
                 ks = kslist[s_start]
                 ksnext = kslist[s_end]
-                print ks, ksnext,  s_start, s_end
+                #print ks, ksnext,  s_start, s_end
                 if ks == ksnext:
                     s_end += 1
                 else:
-                    segments.append('%d %d %d' % (s_start, s_end, ks))
+                    segmentslist.append('%d %d %d' % (s_start+1, s_end+1, ks))
                     s_start = s_end
                     s_end += 1
+            segmentslist.append('%d %d %d' % (s_start+1, s_end+1, kslist[s_start]))
 
-            nsegments = int(len(segments))
-            yzcoord = "\n".join(["%f %f" % tuple(c) for c in s.yzcoord.T])
-            segments = "\n".join(segments)
-            print segments
+            nsegments = int(len(segmentslist))
+            #print s.yzcoord.T
+            yzcoordstr = "\n".join(["%f %f" % tuple(c) for c in s.yzcoord.T])
+            segmentstr = "\n".join(segmentslist)
+
+            # Define the string that will be write in the file for each section
             variosection = """%f %s %s
-            %d %d
-            %s
-            %s""" % (x, erod, disc,
+%d %d
+%s
+%s
+""" % (x, erod, disc,
                      npoints, nsegments,
-                     yzcoord,
-                     segments)
-            if discontinuity:
-                dis_str = "%d\n%d\n%f\n%f" % (s.variotype, s.d90, s.l, s.excavation)
+                     yzcoordstr,
+                     segmentstr, )
+            # check if there are discontinuity
+            if s.discontinuity:
+                dis_str = "%d\n%d\n%f\n%f\n" % (s.variotype, s.d90, s.varioLenght, s.varioexcav)
                 variosection +=dis_str
+
+            # then write section string to the output file
+            sectionVarioFile.write(variosection)
+        sectionVarioFile.close()
+        print "Finish to export."
+
 
     def importFileOri(self, sectionfilename, pointsfilename):
         """section.ori
