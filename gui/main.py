@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue Apr 20 21:48:51 2010
+# Created: Tue May  4 22:54:55 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -38,7 +38,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.sectionGraphics)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 653, 24))
         self.menubar.setObjectName("menubar")
         self.menu_File = QtGui.QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
@@ -57,27 +57,31 @@ class Ui_MainWindow(object):
         self.actionExport.setObjectName("actionExport")
         self.action_Open = QtGui.QAction(MainWindow)
         self.action_Open.setObjectName("action_Open")
-        self.action_Run = QtGui.QAction(MainWindow)
-        self.action_Run.setObjectName("action_Run")
+        self.actionRun = QtGui.QAction(MainWindow)
+        self.actionRun.setObjectName("actionRun")
+        self.actionView = QtGui.QAction(MainWindow)
+        self.actionView.setObjectName("actionView")
         self.menu_File.addAction(self.actionImport)
         self.menu_File.addAction(self.actionExport)
         self.menu_File.addAction(self.action_Open)
-        self.menuSimulation.addAction(self.action_Run)
+        self.menuSimulation.addAction(self.actionRun)
+        self.menuSimulation.addAction(self.actionView)
         self.menubar.addAction(self.menu_File.menuAction())
         self.menubar.addAction(self.menuSimulation.menuAction())
-        self.toolBar.addAction(self.action_Run)
+        self.toolBar.addAction(self.actionRun)
 
         self.retranslateUi(MainWindow)
         QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentRowChanged(int)"), MainWindow.itemChanged)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "OpenRiver", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "openriver", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuSimulation.setTitle(QtGui.QApplication.translate("MainWindow", "Simulation", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "&Import", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "&Export", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "Import", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Open.setText(QtGui.QApplication.translate("MainWindow", "&Open", None, QtGui.QApplication.UnicodeUTF8))
-        self.action_Run.setText(QtGui.QApplication.translate("MainWindow", "&Run", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRun.setText(QtGui.QApplication.translate("MainWindow", "&Run", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionView.setText(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
 

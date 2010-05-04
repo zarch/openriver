@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>viewSimulation</class>
- <widget class="QWidget" name="viewSimulation">
+ <class>viewSimulation1D</class>
+ <widget class="QWidget" name="viewSimulation1D">
   <property name="geometry">
    <rect>
     <x>0</x>

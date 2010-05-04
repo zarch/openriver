@@ -13,7 +13,7 @@ import numpy as np
 from main import Ui_MainWindow
 from importOri import Ui_importORI
 from editPoints import Ui_EditSection
-from viewSimulation import Ui_viewSimulation
+from viewSimulation import Ui_viewSimulation1D
 
 # Import geometry from core
 from sys import path
@@ -219,7 +219,7 @@ class Main(QMainWindow):
             max = max if max > max0 else max0
         return min, max
 
-    def on_action_Open_triggered(self,checked=None):
+    def on_actionOpen_triggered(self,checked=None):
         if checked is None: return
         filename = QFileDialog.getOpenFileName(self, 'Open project', '/home')
         print filename
@@ -231,12 +231,53 @@ class Main(QMainWindow):
         river = geo.Reach()
         river.importFileORI(sectionsfilename, pointsfilename)
 
-    def on_action_Run_triggered(self,checked=None):
+    def on_actionRun_triggered(self,checked=None):
         if checked is None: return
         # TODO:
         #    * add command to compile?
         #    * or make /bin directory and check which system (32/64 bit) is running and which OS? and then run the comand?
         os.system('./../core/fixbed_sw_1D.out')
+
+#-----------
+    def getSimulationPoints(self, section):
+        data = section.data
+        x = float(section.xcoord[0])
+        talweg = float(section.min)
+        watersurface = talweg
+        #watersurface = sect.watersurf[t]
+        bank_l = float(data[0][2])
+        bank_r = float(data[-1][2])
+        #points.append([sect.x, talweg, watersurface, bank_l, bank_r])
+        p_talweg= QPointF(x, talweg)
+        p_watersurface = QPointF(x, watersurface)
+        p_bank_l = QPointF(x, bank_l)
+        p_bank_r = QPointF(x, bank_r)
+        return [p_talweg, p_watersurface, p_bank_l, p_bank_r]
+
+    def drawLines(self):
+	    """Generic function to add line to the scene, specify index (for examples, min, banks,)"""
+	    #x0, y0, z0, ks0 = sectionlist[0].data[index]
+	    #pnt0 = QPointF(x0, z0)
+	    #points = []
+	    print "djfhvbzvldz"
+	    pen = QPen(QColor(0, 0, 0))
+	    sect0 = self.sezlist[0]
+	    points0 = self.getSimulationPoints(sect0)
+	    for sect in self.sezlist[1:]:
+		    points1 = self.getSimulationPoints(sect)
+		    for i in range(4):
+			    self.scene.addLine(QLineF(points0[i], points1[i]), pen)
+		    points0 = points1
+	    self.ui.sectionGraphics.setScene(self.scene)
+#------
+
+    def on_actionView_triggered(self, checked=None):
+        if checked is None: return
+        self.scene.clear()
+        self.drawLines()
+        
+        #viewer = ViewSimulation1D(self, self.sezlist)
+        #self.ui.sectionGraphics.setScene(viewer.getScene())
 
     def on_lineTabEdit_returnPressed(self, checked=None):
         # selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
@@ -254,33 +295,50 @@ class SectionEditor(QWidget):
         self.ui = Ui_EditSection()
         self.ui.setupUi(self)
 
-class ViewSimulation1D(QWidget):
-    def __init__(self, parent, sectionlist=None):
-        super(ViewSimulation1D, self).__init__(parent)
+#class ViewSimulation1D(QWidget):
+#    #def __init__(self, parent, sectionlist=None):
+#    def __init__(self, window, sectionlist=None):
+#        #super(ViewSimulation1D, self).__init__(parent)
+#		self.window = window
+#		self.ui = Ui_viewSimulation1D()
+#		self.ui.setupUi(self)
 
-        self.ui = Ui_ViewSimulation()
-        self.ui.setupUi(self)
+#		self.sectionlist = sectionlist
 
-        self.sectionlist = sectionlist
+#		self.scene = QGraphicsScene(self)
 
-        self.scene = QGraphicsScene(self)
-        self.ui.GraphicSimulation1D.setScene(self.scene)
+#		self.ui.GraphicSimulation1D.setScene(self.scene)
 
-    def drawLines(self, index):
-        """Generic function to add line to the scene, specify index (for examples, min, banks,)"""
-        #x0, y0, z0, ks0 = sectionlist[0].data[index]
-        #pnt0 = QPointF(x0, z0)
-        points = []
-        for sect in sectionlist:
-            data = sect.data
-            ground = data[sect.min]
-            water = sect.watersurf[t]
-            bank_l = data[0]
-            bank_r = data[-1]
-            points.append([sect.x, ground, water, bank_l, bank_r])
-            #points.append(QPointF(x1, z1))
-            #self.scene.addLine(QLineF(pnt0, pnt1), pen)
-        return points
+#    def getScene(self):
+#        self.drawLines()
+#        return self.scene
+
+#    def getPoints(self, section):
+#		data = sect.data
+#		talweg = data[sect.min]
+#		watersurface = talweg
+#		#watersurface = sect.watersurf[t]
+#		bank_l = data[0]
+#		bank_r = data[-1]
+#		#points.append([sect.x, talweg, watersurface, bank_l, bank_r])
+#		p_talweg= QPointF(sect.x, talweg)
+#		p_watersurface = QPointF(sect.x, watersurface)
+#		p_bank_l = QPointF(sect.x, bank_l)
+#		p_bank_r = QPointF(sect.x, bank_r)
+#		return [p_talweg, p_watersurface, p_bank_l, p_bank_r]
+
+#    def drawLines(self):
+#        """Generic function to add line to the scene, specify index (for examples, min, banks,)"""
+#        #x0, y0, z0, ks0 = sectionlist[0].data[index]
+#        #pnt0 = QPointF(x0, z0)
+#        #points = []
+#        points0 = self.getPoints(self.sectionlist[0])
+#        for sect in self.sectionlist[1:]:
+#            points1 = self.getPoints(sect)
+#            for i in range(4):
+#                self.scene.addLine(QLineF(points0[i], points1[i]), pen)
+#            points0 = points1
+#        self.window.ui.sectionGraphics.setScene(self.scene)
 
 
 

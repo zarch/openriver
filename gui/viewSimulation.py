@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'gui/viewSimulation.ui'
+# Form implementation generated from reading ui file 'viewSimulation.ui'
 #
-# Created: Thu Apr 22 16:35:39 2010
+# Created: Tue May  4 23:15:13 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
 
-class Ui_viewSimulation(object):
-    def setupUi(self, viewSimulation):
-        viewSimulation.setObjectName("viewSimulation")
-        viewSimulation.resize(400, 300)
-        self.GraphicSimulation1D = QtGui.QGraphicsView(viewSimulation)
+class Ui_viewSimulation1D(object):
+    def setupUi(self, viewSimulation1D):
+        viewSimulation1D.setObjectName("viewSimulation1D")
+        viewSimulation1D.resize(400, 300)
+        self.GraphicSimulation1D = QtGui.QGraphicsView(viewSimulation1D)
         self.GraphicSimulation1D.setGeometry(QtCore.QRect(10, 10, 381, 291))
         self.GraphicSimulation1D.setObjectName("GraphicSimulation1D")
 
-        self.retranslateUi(viewSimulation)
-        QtCore.QMetaObject.connectSlotsByName(viewSimulation)
+        self.retranslateUi(viewSimulation1D)
+        QtCore.QMetaObject.connectSlotsByName(viewSimulation1D)
 
-    def retranslateUi(self, viewSimulation):
-        viewSimulation.setWindowTitle(QtGui.QApplication.translate("viewSimulation", "Form", None, QtGui.QApplication.UnicodeUTF8))
+    def retranslateUi(self, viewSimulation1D):
+        viewSimulation1D.setWindowTitle(QtGui.QApplication.translate("viewSimulation1D", "Form", None, QtGui.QApplication.UnicodeUTF8))
 
