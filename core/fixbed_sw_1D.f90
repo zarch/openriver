@@ -1,4 +1,3 @@
-
 !*******************************************************************************************
 MODULE precisione
 IMPLICIT NONE
@@ -725,15 +724,15 @@ OPEN(unit=12,file=trim(path),status='old',action='read')
 !READ(12,*)
 
 DO j=1,nsezi
-!   READ(12,*) h(j), q(j)
-!      write(*,'(2(f12.6,1x))') q(j),h(j)-e(j)
+   READ(12,*) h(j), q(j)
+      write(*,'(2(f12.6,1x))') q(j),h(j)-e(j)
  !write(333,*) e(j)
 ! write(*,*) h(j)
 ! h(j)=12.0_rk
 
 !MAUREL GOTAL
- q(j)=0.0_rk
- h(j)=12.0_rk
+! q(j)=0.0_rk
+! h(j)=12.0_rk
 
 !BUMP
 ! q(j)=4.42_rk
@@ -1243,11 +1242,11 @@ DO j = 1,nsezi
 
    bj = peloliberoi(j,d(j))
 		
-   !calcolo celerit‡
+   !calcolo celerit√†
 
    c(j) = SQRT(gi*A(j)/bj)
 
-   !calcolo velocit‡ media nella sezione
+   !calcolo velocit√† media nella sezione
 	
    u(j) = q(j)/A(j)
 	
@@ -1306,7 +1305,7 @@ a1=sr(3)
  
 IF ((a1*a1-4.*a0).lt.0) THEN 
   WRITE(*,*) "       ----IL PROGRAMMA NON PUO PROCEDERE----" 
-  WRITE(*,*) "ATTENZIONE NELLA SUB.EIGENVALUES IL RADICANDO Ë NEGATIVO!" 
+  WRITE(*,*) "ATTENZIONE NELLA SUB.EIGENVALUES IL RADICANDO √® NEGATIVO!" 
   WRITE(*,*) "POTREBBE DIPENDERE DA SEZIONI POCO FITTE..." 
   WRITE(*,*) "                   DIMINUIRE DX            " 
   STOP 
@@ -1368,11 +1367,11 @@ ciclo_j:DO j = 1,nsezi-1
    UR = CS(2,J+1)/CS(1,J+1)
    CR = C(j+1)
 
-!C calcolo delle velocit‡ nel caso di dry bed
+!C calcolo delle velocit√† nel caso di dry bed
 !(aggiungere in seguito)
 
 
-!C calcolo della profondit‡ nella regione star (10.18)
+!C calcolo della profondit√† nella regione star (10.18)
 
 !EXACT DEPTH POSITIVITY RIEMANN SOLVER
 !   DS = 0.5_rk*(DL+DR)-0.25_rk*(UR-UL)*(DL+DR)/(CL+CR) 
@@ -1393,7 +1392,7 @@ ciclo_j:DO j = 1,nsezi-1
 
    CS_star(1,j)=AS
    CS_star(2,j)=US*AS
-!C calcolo delle velocit‡ d'onda right e left nel caso di wet bed
+!C calcolo delle velocit√† d'onda right e left nel caso di wet bed
 
    IF(DS <= DL)THEN
       ! rarefazione
@@ -1437,7 +1436,7 @@ ciclo_j:DO j = 1,nsezi-1
      WS(1,J) = SL
      WS(2,J) = SR
      WS(3,J) = US
-!C calcolo della discontinuit‡ nella profondit‡ per la condizione TVD
+!C calcolo della discontinuit√† nella profondit√† per la condizione TVD
 
 !     WJ(1,J) = DS - DL
 !     WJ(2,J) = DR-DS
@@ -1477,7 +1476,7 @@ ciclo_j:DO j = 1,nsezi-1
          IUPW =  1
       ENDIF
 
-      !C calcolo della discontinuit‡
+      !C calcolo della discontinuit√†
       
       
       no_tvd_bc :if(j /= 1) then
@@ -1485,12 +1484,12 @@ ciclo_j:DO j = 1,nsezi-1
          DLOC = WJ(K,j)
          DUPW = WJ(K,j+IUPW)
 
-      !C si modifica le piccole discontinuit‡
+      !C si modifica le piccole discontinuit√†
 
          IF(ABS(DUPW).LT.TOLLIM)DUPW = TOLLIM*SIGN(1.0d0,DUPW)
          IF(ABS(DLOC).LT.TOLLIM)DLOC = TOLLIM*SIGN(1.0d0,DLOC)
 
-      !C Calcolo RATIO di upwind per le discontinuit‡ locali
+      !C Calcolo RATIO di upwind per le discontinuit√† locali
 
          RATIO = DUPW/DLOC
 
@@ -1618,11 +1617,11 @@ UR = CS(2,J+1)/CS(1,J+1)
 
  CR = C(j+1)
 
-!C calcolo delle velocit‡ nel caso di dry bed
+!C calcolo delle velocit√† nel caso di dry bed
 !(aggiungere in seguito)
 
 
-!C calcolo della profondit‡ nella regione star (10.18)
+!C calcolo della profondit√† nella regione star (10.18)
 !EXACT DEPTH POSITIVITY RIEMANN SOLVER
 ! DS = 0.5_rk*(DL+DR)-0.25_rk*(UR-UL)*(DL+DR)/(CL+CR)
 ! US = 0.5_rk*(UL+UR)-(DR-DL)*(CL+CR)/(DL+DR)
@@ -1686,7 +1685,7 @@ ENDDO
 WS(1,J) = SL
 WS(2,J) = SR
 WS(3,J) = US
-!C calcolo della discontinuit‡ nella profondit‡ per la condizione TVD
+!C calcolo della discontinuit√† nella profondit√† per la condizione TVD
 
 ! WJ(1,J) = DS - DL
 ! WJ(2,J) = DR-DS
@@ -1729,7 +1728,7 @@ ELSE
 IUPW = 1
 ENDIF
 
-!C calcolo della discontinuit‡
+!C calcolo della discontinuit√†
 
 
 no_tvd_bc :if(j /= 1) then
@@ -1737,12 +1736,12 @@ no_tvd_bc :if(j /= 1) then
 DLOC = WJ(K,j)
 DUPW = WJ(K,j+IUPW)
 
-!C si modifica le piccole discontinuit‡
+!C si modifica le piccole discontinuit√†
 
 IF(ABS(DUPW).LT.TOLLIM)DUPW = TOLLIM*SIGN(1.0d0,DUPW)
 IF(ABS(DLOC).LT.TOLLIM)DLOC = TOLLIM*SIGN(1.0d0,DLOC)
 
-!C Calcolo RATIO di upwind per le discontinuit‡ locali
+!C Calcolo RATIO di upwind per le discontinuit√† locali
 
 RATIO = DUPW/DLOC
 
@@ -1791,7 +1790,7 @@ WL = 0.5*(1.0 + WAFLIM(1))
 WM = 0.5*(WAFLIM(2) - WAFLIM(1))
 WR = 0.5*(1.0 - WAFLIM(2))
 
-!Calcolo i coefficienti di viscosit‡ numerica
+!Calcolo i coefficienti di viscosit√† numerica
 
 ni(1)= -0.5_rk*SRNI(J)*SLNI(J)/(SRNI(J)-SLNI(J))*(WAFLIM(1)-WAFLIM(2))
 ni(2)= -0.5_rk*(WAFLIM(2)*SRNI(J)-WAFLIM(1)*SLNI(J))/(SRNI(J)-SLNI(J))
@@ -3150,14 +3149,14 @@ END SUBROUTINE calcola_Rh
 !------------------------------------------------------------------------------------------
 REAL FUNCTION  peloliberoi(j,dd)
 
-!purpose:	  Data la profondit‡ dd in una sezione j
+!purpose:	  Data la profondit√† dd in una sezione j
 !	          calcola il pelo libero  	
 
 USE comuni
 IMPLICIT NONE
 
 INTEGER (kind=ik),INTENT(in) :: j			!numero della sezione
-REAL    (kind=rk),INTENT(in) :: dd		!profondit‡ nella sezione
+REAL    (kind=rk),INTENT(in) :: dd		!profondit√† nella sezione
 
 
 INTEGER   (kind=ik) :: i
@@ -3505,7 +3504,7 @@ nvals=nvals-2   !dipende da file
 idr_campi_aff=nvals
 
 
-!SPORCATA IN REALT‡ DOVREI LEGGERE OGNI IDROGRAMMA IN INGRESSO DEGLI AFFLUENTI
+!SPORCATA IN REALT√† DOVREI LEGGERE OGNI IDROGRAMMA IN INGRESSO DEGLI AFFLUENTI
 !CAPENDO IN NURODO RIGHE E I VALORI
 ALLOCATE (td_aff		        (totale_affluenti,idr_campi_aff), stat = iostat)
 ALLOCATE (Qd_aff		        (totale_affluenti,idr_campi_aff), stat = iostat)
@@ -3578,7 +3577,7 @@ ENDSUBROUTINE nuovo_contorno
 
 SUBROUTINE profondita_valle(Q_nota,dvalle,j) 
 
-!purpose: calcolo della profonit‡
+!purpose: calcolo della profonit√†
 
 USE comuni
 IMPLICIT NONE
@@ -3628,7 +3627,7 @@ END SUBROUTINE profondita_valle
 
 SUBROUTINE moto_uniforme(zz,qq,j)
 
-!purpose: data la portata si calcola la profondit‡
+!purpose: data la portata si calcola la profondit√†
 
 USE comuni
 IMPLICIT NONE
@@ -3650,7 +3649,7 @@ DO i=1,npi(j)              !C quote
 	ENDIF			
 ENDDO
 
-DO i=1,npi(j)			   !C profondit‡ 
+DO i=1,npi(j)			   !C profondit√† 
 	zp(i)=zz-zp(i)	
 	IF(zp(i) <= 0._rk) THEN				
 	zp(i)=0
@@ -3736,7 +3735,7 @@ PROGRAM hydroWaf
 
 !  CALL letturaAff
 
-  !C Crea i vettori sigma(profondit‡) ed eta(larghezze) per i punti 
+  !C Crea i vettori sigma(profondit√†) ed eta(larghezze) per i punti 
   !C delle sezioni
 
   CALL vect
