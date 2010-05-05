@@ -100,7 +100,7 @@
   </action>
   <action name="actionView">
    <property name="text">
-    <string>View</string>
+    <string>&amp;View</string>
    </property>
   </action>
  </widget>
