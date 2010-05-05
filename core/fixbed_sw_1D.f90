@@ -2878,7 +2878,7 @@ CLOSE(314)
 !nome="./output/"//testo//".datb"//char(0) 
 !OPEN(unit=203,file=nome,form='unformatted')
 
-!WRITE (201,&
+!!!WRITE (201,&
 !      '(2x,"#t[h]:",f6.3," t[s]:",f10.1," dt[s]:",f10.5)') &
 !      time/3600.,time,dtime
 !WRITE(201,*)'#1 waf'

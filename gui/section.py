@@ -272,11 +272,11 @@ class ViewSimulation(QWidget):
     def getPoints(self, section):
         data = section.data
         x = float(section.xcoord[0])
-        talweg = float(section.min)
-        watersurface = talweg
+        talweg = -float(section.min)
         #watersurface = sect.watersurf[t]
         bank_l = float(data[0][2])
         bank_r = float(data[-1][2])
+        watersurface = bank_l
         #points.append([sect.x, talweg, watersurface, bank_l, bank_r])
         p_talweg= QPointF(x, talweg)
         p_watersurface = QPointF(x, watersurface)
