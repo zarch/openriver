@@ -261,6 +261,7 @@ class Main(QMainWindow):
 	    #points = []
 	    print "djfhvbzvldz"
 	    pen = QPen(QColor(0, 0, 0))
+	    # TODO differentiate pens
 	    sect0 = self.sezlist[0]
 	    points0 = self.getSimulationPoints(sect0)
 	    for sect in self.sezlist[1:]:
