@@ -242,11 +242,12 @@ class Main(QMainWindow):
     def getSimulationPoints(self, section):
         data = section.data
         x = float(section.xcoord[0])
-        talweg = float(section.min)
+        
+        talweg = -float(section.min)
         watersurface = talweg
         #watersurface = sect.watersurf[t]
-        bank_l = float(data[0][2])
-        bank_r = float(data[-1][2])
+        bank_l = -float(data[0][2])
+        bank_r = -float(data[-1][2])
         #points.append([sect.x, talweg, watersurface, bank_l, bank_r])
         p_talweg= QPointF(x, talweg)
         p_watersurface = QPointF(x, watersurface)

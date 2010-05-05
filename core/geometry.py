@@ -41,7 +41,7 @@ class Section:
         self.first = first
         self.last = last
         minimum = self.yzcoord[1].argmin()
-        self.min = minimum
+        self.min = self.yzcoord[minimum][1]
 
         self.erodible = erodible
         self.roughness = roughness
