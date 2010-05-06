@@ -83,15 +83,19 @@ class SectionModel(QAbstractTableModel):
     # http://doc.trolltech.com/4.6/qabstracttablemodel.html
 
 class SectionPoint(QGraphicsEllipseItem):
-    def __init__(self, window, index, data):
+    def __init__(self, window, index=None, data=None, point=None):
         self.window = window
         self.row = index
-
         self.data = data
         r = 5
-        x, y, z, ks = self.data
-        self.bbox = QRectF(y-r, -z-r, 2*r, 2*r)
-        self.point = QPointF(y, -z)
+        print 'data:',  self.data
+        if not data==None:
+            x, y, z, ks = self.data
+            self.point = QPointF(y, z)
+        else:
+            self.point = point
+        print self.point.x(), self.point.y()
+        self.bbox = QRectF(self.point.x()-r, -self.point.y()-r, 2*r, 2*r)
 
         super(SectionPoint, self).__init__(self.bbox)
         self.setBrush(QBrush(QColor(0, 0, 150)))
@@ -193,13 +197,13 @@ class Main(QMainWindow):
         i = 0
         pen = QPen(QColor(0, 0, 0))
         # initialize first point
-        pnt0 = SectionPoint(self, i, array[0])
+        pnt0 = SectionPoint(self, index=i, data=array[0])
         # get firs ks
         x, y, z, ks = array[0]
         self.scene.addItem(pnt0)
         for data in array[1:]:
             i += 1
-            pnt1 = SectionPoint(self, i, data)
+            pnt1 = SectionPoint(self, index=i, data=data)
             # change pen property
             pen0 = self.getColorStyle(ks, pen)
             self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
@@ -240,7 +244,7 @@ class Main(QMainWindow):
 
     def on_actionView_triggered(self, checked=None):
         if checked is None: return
-        viewer = ViewSimulation(self, self.sezlist)
+        viewer = ViewSimulation(self, self.sezlist, plane='xy', drawpoints=True)
 
     def on_lineTabEdit_returnPressed(self, checked=None):
         # selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
@@ -258,45 +262,132 @@ class SectionEditor(QWidget):
         self.ui = Ui_EditSection()
         self.ui.setupUi(self)
 
+
+class PolyLine():
+    """Return a scene with points and lines
+    x = [x0,x1,x2,...,xn]
+    y = [[a0,a1,a2,...,an],
+         [b0,b1,b2,...,bn],
+         [c0,c1,c2,...,cn]]
+    pen = [penA,penB,penC]
+
+
+    >>> xp = [1, 2, 3, 4, 5]
+    >>> yp = [[0, 2, 4, 6, 8],
+              [0, 2, 3, 4, 5],
+              [7, 5, 3, 1, 0]]
+    """
+    def __init__(self, scene, pens, x=None, y=None,  lines = None, drawpoints=False):
+        self.scene = scene
+        self.x = x
+        self.y = y
+        self.pens = pens
+        self.lines = lines
+        if not lines:
+            self.lines = self.getLines()
+        self.drawpoints = drawpoints
+
+############################
+# TODO verify this function probably it's broken.
+    def getLines(self):
+        """Return lines from x and y list
+        lines = [line1,line2,line3]
+        line1 = [[x0,a0],[x1,a1],...,[xn,an]]
+        line2 = [[x0,b0],[x1,b1],...,[xn,bn]]
+        line3 = [[x0,c0],[x1,c1],...,[xn,cn]]"""
+        lines = []
+        yT = np.array(self.y).T
+        for y in yT:
+            #print 'y:', y
+            line = []
+            for xi, yi in zip(self.x, y):
+                p = xi, yi
+                line.append(p)
+            print 'line:', line
+            lines.append(line)
+        lines = np.array(lines)
+        return lines
+
+    def drawPolines(self):
+        print len(self.lines), len(self.pens)
+        print self.lines[0]
+        for line,pen  in zip(self.lines, self.pens):
+            self.drawLine(line, pen)
+
+    def drawLine(self, line, pen):
+        """Add line to a scene
+
+        line is define as:
+        line = [(x0,y0),(x1,y1),...,(xn,yn)]"""
+        #print 'line:', line
+        x0, y0 = line[0]
+        pnt0 = QPointF(x0, y0)
+        if self.drawpoints:
+            p0 = SectionPoint(self, point = pnt0)
+            self.scene.addItem(p0)
+        for x1, y1 in line[1:]:
+            pnt1 = QPointF(x1, y1)
+            self.scene.addLine(QLineF(pnt0, pnt1), pen)
+            pnt0 = pnt1
+            if self.drawpoints:
+                p0 = SectionPoint(self, point = pnt0)
+                self.scene.addItem(p0)
+
+
+
+
 class ViewSimulation(QWidget):
-    def __init__(self, parent=None, sectionlist=None):
+    def __init__(self, parent=None, sectionlist=None,  plane = 'xz', drawpoints=False):
         super(ViewSimulation, self).__init__(parent)
         self.ui = Ui_viewSimulation1D()
         self.ui.setupUi(self)
         self.sectionlist = sectionlist
+        self.plane = plane
+        self.drawpoints = drawpoints
         self.scene = QGraphicsScene(self)
         self.ui.GraphicSimulation1D.setScene(self.scene)
         self.drawLines()
         self.show()
 
-    def getPoints(self, section):
+    def getPointsPlane(self, section):
+        """plane could be 'xz' or 'xy' """
+        if self.plane == 'xz':
+            plane = 2
+        elif self.plane == 'xy':
+            plane = 1
         data = section.data
         x = float(section.xcoord[0])
         talweg = -float(section.min)
         watersurface = talweg
         #watersurface = sect.watersurf[t]
-        bank_l = -float(data[0][2])
-        bank_r = -float(data[-1][2])
+        bank_l = -float(data[0][plane])
+        bank_r = -float(data[-1][plane])
+        return x, [talweg, watersurface, bank_l, bank_r]
         #points.append([sect.x, talweg, watersurface, bank_l, bank_r])
-        p_talweg= QPointF(x, talweg)
-        p_watersurface = QPointF(x, watersurface)
-        p_bank_l = QPointF(x, bank_l)
-        p_bank_r = QPointF(x, bank_r)
-        return [p_talweg, p_watersurface, p_bank_l, p_bank_r]
+#        p_talweg= QPointF(x, talweg)
+#        p_watersurface = QPointF(x, watersurface)
+#        p_bank_l = QPointF(x, bank_l)
+#        p_bank_r = QPointF(x, bank_r)
+#        return [p_talweg, p_watersurface, p_bank_l, p_bank_r]
 
     def drawLines(self):
         """Generic function to add line to the scene, specify index (for examples, min, banks,)"""
         #x0, y0, z0, ks0 = sectionlist[0].data[index]
         #pnt0 = QPointF(x0, z0)
-        #points = []
-        pen = QPen(QColor(0, 0, 0))
-        points0 = self.getPoints(self.sectionlist[0])
-        for sect in self.sectionlist[1:]:
-            points1 = self.getPoints(sect)
-            for i in range(4):
-                self.scene.addLine(QLineF(points0[i], points1[i]), pen)
-            points0 = points1
-        self.ui.GraphicSimulation1D.setScene(self.scene)
+        x, y = [], []
+        for sect in self.sectionlist:
+            xn, yn = self.getPointsPlane(sect)
+            x.append(xn)
+            y.append(yn)
+        pen_talweg = QPen(Qt.darkRed)
+        pen_water = QPen(Qt.darkBlue)
+        pen_bank_l = QPen(Qt.black)
+        pen_bank_r = QPen(Qt.black)
+        pen_bank_r.setStyle(Qt.DotLine)
+        pens = [pen_talweg, pen_water, pen_bank_l, pen_bank_r]
+        lines = PolyLine(self.scene, pens, x, y, drawpoints=self.drawpoints)
+        lines.drawPolines()
+        self.ui.GraphicSimulation1D.setScene(lines.scene)
 
 
 
