@@ -7,13 +7,13 @@ from os.path import join as joinpath
 sec_rectangular=[(0, 0), (0, -2), (10, -2), (10, 0)]
 sec_rectangular2=sec_rectangular[1:]
 sec_rectangular2=sec_rectangular.insert(-1, sec_rectangular[-1])
-print sec_rectangular
-print sec_rectangular2
+#print sec_rectangular
+#print sec_rectangular2
 rect=np.array(sec_rectangular)
 rect2=np.array(sec_rectangular2)
 rect_y=np.array([i[0] for i in sec_rectangular])
 rect_z=np.array([i[1] for i in sec_rectangular])
-print rect,  rect2
+#print rect,  rect2
 
 import csv
 

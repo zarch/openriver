@@ -88,13 +88,13 @@ class SectionPoint(QGraphicsEllipseItem):
         self.row = index
         self.data = data
         r = 5
-        print 'data:',  self.data
+        #print 'data:',  self.data
         if not data==None:
             x, y, z, ks = self.data
             self.point = QPointF(y, z)
         else:
             self.point = point
-        print self.point.x(), self.point.y()
+        #print self.point.x(), self.point.y()
         self.bbox = QRectF(self.point.x()-r, -self.point.y()-r, 2*r, 2*r)
 
         super(SectionPoint, self).__init__(self.bbox)
@@ -163,13 +163,13 @@ class Main(QMainWindow):
         cl = 0
         pas = 1./numberOfClass
         limit = np.array([i for i in range(numberOfClass)]) * pas
-        print '='*40
-        print limit
+        #print '='*40
+        #print limit
         for i, l in enumerate(limit):
             if ratio >= l:
-                print ratio, l, i
+         #       print ratio, l, i
                 cl = i
-        print 'cl is:', cl
+        #print 'cl is:', cl
         return cl
 
     def getColorStyle(self, ks, pen):
@@ -177,7 +177,7 @@ class Main(QMainWindow):
         r = (ks - self.ksmin)/(self.ksmax - self.ksmin)
         # classification in 5 different class
         cl = self.classify(r, 5)
-        print 'r is:%s\nks is:%s\nclass is %s' % (r, ks, str(cl))
+        #print 'r is:%s\nks is:%s\nclass is %s' % (r, ks, str(cl))
         if 'color' in self.kslinestyle:
             pen.setColor(QColor(int(250*(1-r)), 0, 0))
         if 'width' in self.kslinestyle:
@@ -206,8 +206,9 @@ class Main(QMainWindow):
             pnt1 = SectionPoint(self, index=i, data=data)
             # change pen property
             pen0 = self.getColorStyle(ks, pen)
-            self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
             self.scene.addItem(pnt1)
+            self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
+            print pnt0.point,pnt1.point
             pnt0 = pnt1
             x, y, z, ks = data
 
@@ -226,7 +227,7 @@ class Main(QMainWindow):
     def on_actionOpen_triggered(self,checked=None):
         if checked is None: return
         filename = QFileDialog.getOpenFileName(self, 'Open project', '/home')
-        print filename
+       # print filename
 
     def on_actionImport_triggered(self,checked=None):
         if checked is None: return
@@ -244,9 +245,8 @@ class Main(QMainWindow):
 
     def on_actionView_triggered(self, checked=None):
         if checked is None: return
-        viewer = ViewSimulation(self, self.sezlist, plane='xy', drawpoints=True)
-        stackwindow =StackedWindow(self)
-        stackwindow.show()
+        viewer = ViewSimulation(self, self.sezlist, plane='xz', drawpoints=True)
+        
         
     def on_lineTabEdit_returnPressed(self, checked=None):
         # selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
@@ -305,14 +305,14 @@ class PolyLine():
             for xi, yi in zip(self.x, y):
                 p = xi, yi
                 line.append(p)
-            print 'line:', line
+            #print 'line:', line
             lines.append(line)
         lines = np.array(lines)
         return lines
 
     def drawPolines(self):
-        print len(self.lines), len(self.pens)
-        print self.lines[0]
+        #print len(self.lines), len(self.pens)
+        #print self.lines[0]
         for line,pen  in zip(self.lines, self.pens):
             self.drawLine(line, pen)
 
@@ -335,25 +335,7 @@ class PolyLine():
                 p0 = SectionPoint(self, point = pnt0)
                 self.scene.addItem(p0)
 
-class StackedWindow(QMainWindow):
-    def __init__(self, *args):
-        apply(QMainWindow.__init__, (self, ) + args)
-        self.setWindowTitle("Stacked Window")
-        centralwidget = QWidget(self)
-        frame = QFrame(centralwidget)
-        verticalLayout = QVBoxLayout(frame)
-        pushButton = QPushButton("Push Button 1", frame)
-        verticalLayout.addWidget(pushButton)
-        pushButton_2 = QPushButton("Push Button 2", frame)
-        verticalLayout.addWidget(pushButton_2)
-        lineEdit = QLineEdit(frame)
-        verticalLayout.addWidget(lineEdit)
-        lineEdit_2 = QLineEdit(frame)
-        verticalLayout.addWidget(lineEdit_2)
-        self.setCentralWidget(centralwidget)
-
-
-class ViewSimulation(QWidget):
+class ViewSimulation(QMainWindow):
     def __init__(self, parent=None, sectionlist=None,  plane = 'xz', drawpoints=True):
         super(ViewSimulation, self).__init__(parent)
         self.ui = Ui_viewSimulation1D()
@@ -370,14 +352,16 @@ class ViewSimulation(QWidget):
         """plane could be 'xz' or 'xy' """
         if self.plane == 'xz':
             plane = 2
+            
         elif self.plane == 'xy':
             plane = 1
+        print plane
         data = section.data
         x = float(section.xcoord[0])
         talweg = float(section.min)
         #watersurface = sect.watersurf[t]
-        bank_l = float(data[0][2])
-        bank_r = float(data[-1][2])
+        bank_l = float(data[0][plane])
+        bank_r = float(data[-1][plane])
         watersurface = bank_r
         return x, [talweg, watersurface, bank_l, bank_r]
         #points.append([sect.x, talweg, watersurface, bank_l, bank_r])

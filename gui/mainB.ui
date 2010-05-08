@@ -1,22 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>viewSimulation1D</class>
- <widget class="QMainWindow" name="viewSimulation1D">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>653</width>
-    <height>313</height>
+    <height>597</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Simulation Results</string>
+   <string>openriver</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QGraphicsView" name="GraphicSimulation1D"/>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QListWidget" name="listSections"/>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLineEdit" name="lineTabEdit"/>
+        </item>
+        <item>
+         <widget class="QTableView" name="tableSectionCoord"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QwtPlot" name="qwtPlot"/>
+    </item>
+    <item>
+     <widget class="QGraphicsView" name="sectionGraphics"/>
     </item>
    </layout>
   </widget>
@@ -29,6 +50,23 @@
      <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionImport"/>
+    <addaction name="actionExport"/>
+    <addaction name="action_Open"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="actionRun"/>
+    <addaction name="actionView"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuSimulation"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -41,6 +79,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionRun"/>
   </widget>
   <action name="actionImport">
    <property name="text">
@@ -71,12 +110,19 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QwtPlot</class>
+   <extends>QFrame</extends>
+   <header>qwt_plot.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
    <sender>actionView</sender>
    <signal>triggered()</signal>
-   <receiver>viewSimulation1D</receiver>
+   <receiver>MainWindow</receiver>
    <slot>showNormal()</slot>
    <hints>
     <hint type="sourcelabel">
