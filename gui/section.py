@@ -245,7 +245,9 @@ class Main(QMainWindow):
     def on_actionView_triggered(self, checked=None):
         if checked is None: return
         viewer = ViewSimulation(self, self.sezlist, plane='xy', drawpoints=True)
-
+        stackwindow =StackedWindow(self)
+        stackwindow.show()
+        
     def on_lineTabEdit_returnPressed(self, checked=None):
         # selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
         cellist = self.ui.tableSectionCoord.selectedIndexes()
@@ -333,11 +335,26 @@ class PolyLine():
                 p0 = SectionPoint(self, point = pnt0)
                 self.scene.addItem(p0)
 
-
+class StackedWindow(QMainWindow):
+    def __init__(self, *args):
+        apply(QMainWindow.__init__, (self, ) + args)
+        self.setWindowTitle("Stacked Window")
+        centralwidget = QWidget(self)
+        frame = QFrame(centralwidget)
+        verticalLayout = QVBoxLayout(frame)
+        pushButton = QPushButton("Push Button 1", frame)
+        verticalLayout.addWidget(pushButton)
+        pushButton_2 = QPushButton("Push Button 2", frame)
+        verticalLayout.addWidget(pushButton_2)
+        lineEdit = QLineEdit(frame)
+        verticalLayout.addWidget(lineEdit)
+        lineEdit_2 = QLineEdit(frame)
+        verticalLayout.addWidget(lineEdit_2)
+        self.setCentralWidget(centralwidget)
 
 
 class ViewSimulation(QWidget):
-    def __init__(self, parent=None, sectionlist=None,  plane = 'xz', drawpoints=False):
+    def __init__(self, parent=None, sectionlist=None,  plane = 'xz', drawpoints=True):
         super(ViewSimulation, self).__init__(parent)
         self.ui = Ui_viewSimulation1D()
         self.ui.setupUi(self)
@@ -357,11 +374,11 @@ class ViewSimulation(QWidget):
             plane = 1
         data = section.data
         x = float(section.xcoord[0])
-        talweg = -float(section.min)
-        watersurface = talweg
+        talweg = float(section.min)
         #watersurface = sect.watersurf[t]
-        bank_l = -float(data[0][plane])
-        bank_r = -float(data[-1][plane])
+        bank_l = float(data[0][2])
+        bank_r = float(data[-1][2])
+        watersurface = bank_r
         return x, [talweg, watersurface, bank_l, bank_r]
         #points.append([sect.x, talweg, watersurface, bank_l, bank_r])
 #        p_talweg= QPointF(x, talweg)
