@@ -341,6 +341,7 @@ class ViewSimulation(QMainWindow):
         self.ui = Ui_viewSimulation1D()
         self.ui.setupUi(self)
         self.sectionlist = sectionlist
+        self.readSimulation()
         self.plane = plane
         self.drawpoints = drawpoints
         self.scene = QGraphicsScene(self)
@@ -355,14 +356,14 @@ class ViewSimulation(QMainWindow):
             
         elif self.plane == 'xy':
             plane = 1
-        print plane
+        #print plane
         data = section.data
         x = float(section.xcoord[0])
         talweg = float(section.min)
-        #watersurface = sect.watersurf[t]
+        watersurface = section.watersurf
         bank_l = float(data[0][plane])
         bank_r = float(data[-1][plane])
-        watersurface = bank_r
+        #watersurface = bank_r
         return x, [talweg, watersurface, bank_l, bank_r]
         #points.append([sect.x, talweg, watersurface, bank_l, bank_r])
 #        p_talweg= QPointF(x, talweg)
@@ -389,14 +390,19 @@ class ViewSimulation(QMainWindow):
         lines = PolyLine(self.scene, pens, x, y, drawpoints=self.drawpoints)
         lines.drawPolines()
         self.ui.GraphicSimulation1D.setScene(lines.scene)
-
-
+        
+    def readSimulation(self):
+        resultsfilename = QFileDialog.getOpenFileName(self, 'Select results file', '/home')
+        resultsfilename = str(resultsfilename)
+        resultsData = np.genfromtxt(resultsfilename)
+        rows = resultsData.shape[0]
+        for m in range(0,rows):
+           self.sectionlist[m].watersurf = resultsData[m][0]
 
 def main():
     # import a reach for test
     river = geo.Reach()
     river.importFileOri('../test/test1/sections.ori', '../test/test1/points.ori')
-
     app = QApplication(sys.argv)
     window = Main(river.sections)
     window.show()

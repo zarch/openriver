@@ -491,8 +491,9 @@ class Reach:
         #print delta
         return np.sum(np.sqrt(delta * delta))
 
-    def readSimulation(self):
+    def readSimulation(self,resultsfilename):
         pass
+            
 
 
 if __name__ == "__main__":
