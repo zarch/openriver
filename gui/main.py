@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Mon May 10 13:22:11 2010
+# Created: Mon May 10 13:23:57 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,7 +60,6 @@ class Ui_MainWindow(object):
         self.actionRun = QtGui.QAction(MainWindow)
         self.actionRun.setObjectName("actionRun")
         self.actionView = QtGui.QAction(MainWindow)
-        self.actionView.setShortcutContext(QtCore.Qt.WidgetShortcut)
         self.actionView.setObjectName("actionView")
         self.menu_File.addAction(self.actionImport)
         self.menu_File.addAction(self.actionExport)
@@ -72,7 +71,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionRun)
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.actionView, QtCore.SIGNAL("triggered()"), MainWindow.showNormal)
+        QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentRowChanged(int)"), MainWindow.itemChanged)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -84,5 +83,5 @@ class Ui_MainWindow(object):
         self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export", None, QtGui.QApplication.UnicodeUTF8))
         self.action_Open.setText(QtGui.QApplication.translate("MainWindow", "&Open", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRun.setText(QtGui.QApplication.translate("MainWindow", "&Run", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionView.setText(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionView.setText(QtGui.QApplication.translate("MainWindow", "View", None, QtGui.QApplication.UnicodeUTF8))
 

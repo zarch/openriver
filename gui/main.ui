@@ -100,20 +100,17 @@
   </action>
   <action name="actionView">
    <property name="text">
-    <string>&amp;View</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::WidgetShortcut</enum>
+    <string>View</string>
    </property>
   </action>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>actionView</sender>
-   <signal>triggered()</signal>
+   <sender>listSections</sender>
+   <signal>currentRowChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>showNormal()</slot>
+   <slot>itemChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>200</x>
