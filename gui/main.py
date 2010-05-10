@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Wed May  5 11:35:46 2010
+# Created: Mon May 10 13:22:11 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,6 +60,7 @@ class Ui_MainWindow(object):
         self.actionRun = QtGui.QAction(MainWindow)
         self.actionRun.setObjectName("actionRun")
         self.actionView = QtGui.QAction(MainWindow)
+        self.actionView.setShortcutContext(QtCore.Qt.WidgetShortcut)
         self.actionView.setObjectName("actionView")
         self.menu_File.addAction(self.actionImport)
         self.menu_File.addAction(self.actionExport)
@@ -71,7 +72,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionRun)
 
         self.retranslateUi(MainWindow)
-        QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentRowChanged(int)"), MainWindow.itemChanged)
+        QtCore.QObject.connect(self.actionView, QtCore.SIGNAL("triggered()"), MainWindow.showNormal)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
