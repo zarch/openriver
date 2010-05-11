@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'viewSimulation2.ui'
 #
-# Created: Tue May 11 13:29:39 2010
+# Created: Tue May 11 14:31:17 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -15,14 +15,16 @@ class Ui_MainWindow(object):
         MainWindow.resize(741, 538)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.centralwidget)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.listProfiles = QtGui.QListWidget(self.centralwidget)
-        self.listProfiles.setObjectName("listProfiles")
-        self.verticalLayout_2.addWidget(self.listProfiles)
         self.GraphicSimulation1D = QtGui.QGraphicsView(self.centralwidget)
+        self.GraphicSimulation1D.setGeometry(QtCore.QRect(9, 103, 711, 331))
         self.GraphicSimulation1D.setObjectName("GraphicSimulation1D")
-        self.verticalLayout_2.addWidget(self.GraphicSimulation1D)
+        self.listProfiles = QtGui.QListWidget(self.centralwidget)
+        self.listProfiles.setEnabled(True)
+        self.listProfiles.setGeometry(QtCore.QRect(10, 40, 701, 51))
+        self.listProfiles.setObjectName("listProfiles")
+        self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(20, 10, 281, 18))
+        self.label.setObjectName("label")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 741, 24))
@@ -52,6 +54,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Simulation Results", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("MainWindow", "Select a time step (time in seconds):", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionImport.setText(QtGui.QApplication.translate("MainWindow", "Import", None, QtGui.QApplication.UnicodeUTF8))
         self.actionExport.setText(QtGui.QApplication.translate("MainWindow", "Export", None, QtGui.QApplication.UnicodeUTF8))

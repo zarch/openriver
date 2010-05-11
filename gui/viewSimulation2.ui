@@ -14,14 +14,42 @@
    <string>Simulation Results</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QListWidget" name="listProfiles"/>
-    </item>
-    <item>
-     <widget class="QGraphicsView" name="GraphicSimulation1D"/>
-    </item>
-   </layout>
+   <widget class="QGraphicsView" name="GraphicSimulation1D">
+    <property name="geometry">
+     <rect>
+      <x>9</x>
+      <y>103</y>
+      <width>711</width>
+      <height>331</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listProfiles">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>701</width>
+      <height>51</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>10</y>
+      <width>281</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select a time step (time in seconds):</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
