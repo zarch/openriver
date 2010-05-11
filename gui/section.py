@@ -10,7 +10,7 @@ from PyQt4.Qt import *
 import numpy as np
 
 # Import the compiled UI module
-from main import Ui_MainWindow
+from main2 import Ui_MainWindow
 from importOri import Ui_importORI
 from editPoints import Ui_EditSection
 from viewSimulation2 import Ui_MainWindow as Ui_viewSimulation1D
@@ -112,14 +112,16 @@ class SectionPoint(QGraphicsEllipseItem):
 
 # Create a class for our main window
 class Main(QMainWindow):
-    def __init__(self,  sezlist):
+    def __init__(self):
         QMainWindow.__init__(self)
-        self.sezlist = sezlist
+        
+        
+        #self.sezlist = sezlist
 
         # This is always the same
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
-
+    def showall(self):
         # populate the list section
         listsect = []
         for s in self.sezlist:
@@ -197,6 +199,7 @@ class Main(QMainWindow):
 
     def drawSection(self, array):
         self.scene.clear()
+        #self.ui.sectionGraphics.sceneRect(self.scene.sceneRect())
         r = 5
         i = 0
         pen = QPen(QColor(0, 0, 0))
@@ -238,7 +241,9 @@ class Main(QMainWindow):
         sectionsfilename = QFileDialog.getOpenFileName(self, 'Import sections.ori file', '/home')
         pointsfilename = QFileDialog.getOpenFileName(self, 'Import points.ori file', sectionsfilename)
         river = geo.Reach()
-        river.importFileORI(sectionsfilename, pointsfilename)
+        river.importFileOri(sectionsfilename, pointsfilename)
+        self.sezlist = river.sections
+        self.showall()
 
     def on_actionRun_triggered(self,checked=None):
         if checked is None: return
@@ -419,9 +424,10 @@ class ViewSimulation(QMainWindow):
 def main():
     # import a reach for test
     river = geo.Reach()
-    river.importFileOri('../test/test3/sections.ori', '../test/test3/points.ori')
+    river.importFileOri('../test/test1/sections.ori', '../test/test1/points.ori')
     app = QApplication(sys.argv)
-    window = Main(river.sections)
+#    window = Main(river.sections)
+    window = Main()
     window.show()
     # It's exec_ because exec is a reserved word in Python
     sys.exit(app.exec_())

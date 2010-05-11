@@ -6,66 +6,63 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>741</width>
-    <height>538</height>
+    <width>653</width>
+    <height>597</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Simulation Results</string>
+   <string>openriver</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGraphicsView" name="GraphicSimulation1D">
-    <property name="geometry">
-     <rect>
-      <x>9</x>
-      <y>103</y>
-      <width>711</width>
-      <height>331</height>
-     </rect>
-    </property>
-    <property name="transformationAnchor">
-     <enum>QGraphicsView::NoAnchor</enum>
-    </property>
-    <property name="rubberBandSelectionMode">
-     <enum>Qt::IntersectsItemBoundingRect</enum>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="listProfiles">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>701</width>
-      <height>51</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>281</width>
-      <height>18</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Select a time step (time in seconds):</string>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QListWidget" name="listSections"/>
+      <widget class="QWidget" name="layoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLineEdit" name="lineTabEdit"/>
+        </item>
+        <item>
+         <widget class="QTableView" name="tableSectionCoord"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGraphicsView" name="sectionGraphics"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>741</width>
+     <width>653</width>
      <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;Geometry</string>
+    </property>
+    <addaction name="actionImport"/>
+    <addaction name="actionExport"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="actionRun"/>
+    <addaction name="actionView"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuSimulation"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -101,24 +98,21 @@
   </action>
   <action name="actionView">
    <property name="text">
-    <string>&amp;View</string>
-   </property>
-   <property name="shortcutContext">
-    <enum>Qt::WidgetShortcut</enum>
+    <string>View</string>
    </property>
   </action>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>listProfiles</sender>
+   <sender>listSections</sender>
    <signal>currentRowChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>itemChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>370</x>
-     <y>159</y>
+     <x>200</x>
+     <y>300</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
