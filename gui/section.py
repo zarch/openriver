@@ -13,11 +13,14 @@ import numpy as np
 from main import Ui_MainWindow
 from importOri import Ui_importORI
 from editPoints import Ui_EditSection
-from viewSimulation import Ui_viewSimulation1D
+from viewSimulation2 import Ui_MainWindow as Ui_viewSimulation1D
 
 # Import geometry from core
 from sys import path
 from os.path import join as joinpath
+import os as os
+import glob as glob
+import fnmatch as fnmatch
 path.append(joinpath('..','core'))
 import geometry as geo
 
@@ -245,8 +248,7 @@ class Main(QMainWindow):
 
     def on_actionView_triggered(self, checked=None):
         if checked is None: return
-        viewer = ViewSimulation(self, self.sezlist, plane='xz', drawpoints=True)
-        
+        viewer = ViewSimulation(self, self.sezlist, plane='xz', drawpoints=False)
         
     def on_lineTabEdit_returnPressed(self, checked=None):
         # selectedIndexes() returns a list of all selected and non-hidden item indexes in the view
@@ -263,7 +265,6 @@ class SectionEditor(QWidget):
 
         self.ui = Ui_EditSection()
         self.ui.setupUi(self)
-
 
 class PolyLine():
     """Return a scene with points and lines
@@ -346,36 +347,34 @@ class ViewSimulation(QMainWindow):
         self.drawpoints = drawpoints
         self.scene = QGraphicsScene(self)
         self.ui.GraphicSimulation1D.setScene(self.scene)
-        self.drawLines()
         self.show()
+        
+    def itemChanged(self, index):
+        self.scene.clear()
+        profile = self.profilesName[index]
+        wsData = np.genfromtxt(profile)
+        rows = wsData.shape[0]
+        for m in range(0,rows):
+           self.sectionlist[m].watersurf = wsData[m][0]
+        print "changed"
+        self.drawLines()
 
     def getPointsPlane(self, section):
         """plane could be 'xz' or 'xy' """
         if self.plane == 'xz':
             plane = 2
-            
         elif self.plane == 'xy':
             plane = 1
-        #print plane
         data = section.data
         x = float(section.xcoord[0])
         talweg = float(section.min)
         watersurface = section.watersurf
         bank_l = float(data[0][plane])
         bank_r = float(data[-1][plane])
-        #watersurface = bank_r
         return x, [talweg, watersurface, bank_l, bank_r]
-        #points.append([sect.x, talweg, watersurface, bank_l, bank_r])
-#        p_talweg= QPointF(x, talweg)
-#        p_watersurface = QPointF(x, watersurface)
-#        p_bank_l = QPointF(x, bank_l)
-#        p_bank_r = QPointF(x, bank_r)
-#        return [p_talweg, p_watersurface, p_bank_l, p_bank_r]
 
     def drawLines(self):
         """Generic function to add line to the scene, specify index (for examples, min, banks,)"""
-        #x0, y0, z0, ks0 = sectionlist[0].data[index]
-        #pnt0 = QPointF(x0, z0)
         x, y = [], []
         for sect in self.sectionlist:
             xn, yn = self.getPointsPlane(sect)
@@ -392,12 +391,29 @@ class ViewSimulation(QMainWindow):
         self.ui.GraphicSimulation1D.setScene(lines.scene)
         
     def readSimulation(self):
-        resultsfilename = QFileDialog.getOpenFileName(self, 'Select results file', '/home')
-        resultsfilename = str(resultsfilename)
-        resultsData = np.genfromtxt(resultsfilename)
-        rows = resultsData.shape[0]
+        self.profilesName = []
+        paths =  str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        files = os.listdir(paths)
+        for file in files:
+            if glob.fnmatch.fnmatch(file,"res*"):
+               self.profilesName.append(str(paths)+"/"+str(file))
+            if glob.fnmatch.fnmatch(file,"time*"):
+                timesName = str(paths)+"/"+str(file)
+        self.timesList = []
+        timesData = np.genfromtxt(timesName)
+        rows = timesData.shape[0]
         for m in range(0,rows):
-           self.sectionlist[m].watersurf = resultsData[m][0]
+            self.timesList.append(str(timesData[m][1]))
+        self.profilesName = sorted(self.profilesName)
+        self.ui.listProfiles.insertItems(0, self.timesList)
+
+        
+#        resultsfilename = QFileDialog.getOpenFileName(self, 'Select results file', '/home')
+#        resultsfilename = str(resultsfilename)
+#        resultsData = np.genfromtxt(resultsfilename)
+#        rows = resultsData.shape[0]
+#        for m in range(0,rows):
+#           self.sectionlist[m].watersurf = resultsData[m][0]
 
 def main():
     # import a reach for test
