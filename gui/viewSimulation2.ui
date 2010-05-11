@@ -23,6 +23,9 @@
       <height>331</height>
      </rect>
     </property>
+    <property name="rubberBandSelectionMode">
+     <enum>Qt::IntersectsItemShape</enum>
+    </property>
    </widget>
    <widget class="QListWidget" name="listProfiles">
     <property name="enabled">

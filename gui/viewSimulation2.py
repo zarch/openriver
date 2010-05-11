@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'viewSimulation2.ui'
 #
-# Created: Tue May 11 14:31:17 2010
+# Created: Tue May 11 17:07:01 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,6 +17,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.GraphicSimulation1D = QtGui.QGraphicsView(self.centralwidget)
         self.GraphicSimulation1D.setGeometry(QtCore.QRect(9, 103, 711, 331))
+        self.GraphicSimulation1D.setRubberBandSelectionMode(QtCore.Qt.IntersectsItemShape)
         self.GraphicSimulation1D.setObjectName("GraphicSimulation1D")
         self.listProfiles = QtGui.QListWidget(self.centralwidget)
         self.listProfiles.setEnabled(True)

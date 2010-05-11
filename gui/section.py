@@ -98,7 +98,8 @@ class SectionPoint(QGraphicsEllipseItem):
         else:
             self.point = point
         #print self.point.x(), self.point.y()
-        self.bbox = QRectF(self.point.x()-r, -self.point.y()-r, 2*r, 2*r)
+        
+        self.bbox = QRectF(self.point.x()-r, -self.point.y()+r, 2*r, 2*r)
 
         super(SectionPoint, self).__init__(self.bbox)
         self.setBrush(QBrush(QColor(0, 0, 150)))
@@ -211,7 +212,7 @@ class Main(QMainWindow):
             pen0 = self.getColorStyle(ks, pen)
             self.scene.addItem(pnt1)
             self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
-            print pnt0.point,pnt1.point
+            #print pnt0.point,pnt1.point
             pnt0 = pnt1
             x, y, z, ks = data
 
@@ -418,7 +419,7 @@ class ViewSimulation(QMainWindow):
 def main():
     # import a reach for test
     river = geo.Reach()
-    river.importFileOri('../test/test1/sections.ori', '../test/test1/points.ori')
+    river.importFileOri('../test/test3/sections.ori', '../test/test3/points.ori')
     app = QApplication(sys.argv)
     window = Main(river.sections)
     window.show()
