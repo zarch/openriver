@@ -725,15 +725,15 @@ OPEN(unit=12,file=trim(path),status='old',action='read')
 !READ(12,*)
 
 DO j=1,nsezi
-!   READ(12,*) h(j), q(j)
-!      write(*,'(2(f12.6,1x))') q(j),h(j)-e(j)
+   READ(12,*) h(j), q(j)
+      write(*,'(2(f12.6,1x))') q(j),h(j)-e(j)
  !write(333,*) e(j)
 ! write(*,*) h(j)
 ! h(j)=12.0_rk
 
 !MAUREL GOTAL
- q(j)=0.0_rk
- h(j)=12.0_rk
+! q(j)=0.0_rk
+! h(j)=12.0_rk
 
 !BUMP
 ! q(j)=4.42_rk
@@ -804,7 +804,7 @@ SUBROUTINE bcondi
 q(1)=qstar
   	
 
-! CALL bcmonte(1,d(1),q(1),d(1))
+ CALL bcmonte(1,d(1),q(1),d(1))
 
 !BUMP
 !q(1)=qstar
@@ -812,22 +812,22 @@ q(1)=qstar
 
 
 !MAUREL GOTAL
-d(1)=d(2)
-q(1)=q(2)
+!d(1)=d(2)
+!q(1)=q(2)
 
 
 a(1)=depth2area(1,d(1))
 
 
-! CALL bcvalle(d(nsezi),q(nsezi),nsezi)
+ CALL bcvalle(d(nsezi),q(nsezi),nsezi)
 
 !BUMP
 !d(nsezi)=2.0_rk
 !q(nsezi)=q(nsezi-1)
 
 !MAUREL GOTAL
-d(nsezi)=d(nsezi-1)
-q(nsezi)=q(nsezi-1)
+!d(nsezi)=d(nsezi-1)
+!q(nsezi)=q(nsezi-1)
   
 
  a(nsezi)=depth2area(nsezi,d(nsezi))
@@ -2878,7 +2878,7 @@ CLOSE(314)
 !nome="./output/"//testo//".datb"//char(0) 
 !OPEN(unit=203,file=nome,form='unformatted')
 
-!!!WRITE (201,&
+!WRITE (201,&
 !      '(2x,"#t[h]:",f6.3," t[s]:",f10.1," dt[s]:",f10.5)') &
 !      time/3600.,time,dtime
 !WRITE(201,*)'#1 waf'
