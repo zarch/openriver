@@ -121,6 +121,7 @@ class Main(QMainWindow):
         # This is always the same
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
+        
     def showall(self):
         # populate the list section
         listsect = []
@@ -199,7 +200,6 @@ class Main(QMainWindow):
 
     def drawSection(self, array):
         self.scene.clear()
-        #self.ui.sectionGraphics.sceneRect(self.scene.sceneRect())
         r = 5
         i = 0
         pen = QPen(QColor(0, 0, 0))
