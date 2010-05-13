@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>799</width>
     <height>600</height>
    </rect>
   </property>
@@ -29,7 +29,7 @@
      </property>
     </column>
    </widget>
-   <widget class="QTabWidget" name="tabWidget">
+   <widget class="QTabWidget" name="Tabs">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -41,50 +41,252 @@
     <property name="currentIndex">
      <number>0</number>
     </property>
-    <widget class="QWidget" name="tab">
+    <widget class="QWidget" name="geometry">
      <attribute name="title">
       <string>Geometry</string>
      </attribute>
-     <widget class="QListWidget" name="listWidget">
+     <widget class="QPushButton" name="createGeom">
       <property name="geometry">
        <rect>
-        <x>11</x>
-        <y>11</y>
-        <width>206</width>
-        <height>192</height>
+        <x>10</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
        </rect>
+      </property>
+      <property name="text">
+       <string>Create</string>
       </property>
      </widget>
-     <widget class="QTableView" name="tableView">
+     <widget class="QPushButton" name="importGeom">
       <property name="geometry">
        <rect>
-        <x>223</x>
-        <y>11</y>
-        <width>401</width>
-        <height>192</height>
+        <x>120</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
        </rect>
       </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
+      </property>
+      <property name="text">
+       <string>Import</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="exportGeom">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="interpolateGeom">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Interpolate</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>31</y>
+        <width>621</width>
+        <height>461</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QSplitter" name="splitter">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QListWidget" name="listSections"/>
+         <widget class="QTableView" name="tableSectionCoord"/>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGraphicsView" name="sectionGraphics"/>
+       </item>
+      </layout>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab_2">
+    <widget class="QWidget" name="ics">
      <attribute name="title">
       <string>ICs</string>
      </attribute>
+     <widget class="QPushButton" name="exportIcs">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="importIcs">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Import</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="createIcs">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Create</string>
+      </property>
+     </widget>
     </widget>
-    <widget class="QWidget" name="tab_3">
+    <widget class="QWidget" name="bcs">
      <attribute name="title">
       <string>BCs</string>
      </attribute>
+     <widget class="QPushButton" name="exportBcs">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="importBcs">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Import</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="createBcs">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Create</string>
+      </property>
+     </widget>
     </widget>
-    <widget class="QWidget" name="tab_4">
+    <widget class="QWidget" name="parameters">
      <attribute name="title">
       <string>Model Parameters</string>
      </attribute>
+     <widget class="QPushButton" name="exportParam">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Export</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="importParam">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Import</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="createParam">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Create</string>
+      </property>
+     </widget>
     </widget>
-    <widget class="QWidget" name="tab_5">
+    <widget class="QWidget" name="simulation">
      <attribute name="title">
       <string>Simulation</string>
      </attribute>
+     <widget class="QPushButton" name="stopSimulation">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Stop</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="runSimulation">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Run</string>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -93,7 +295,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>799</width>
      <height>24</height>
     </rect>
    </property>
@@ -117,7 +319,35 @@
     <string>&amp;Load</string>
    </property>
   </action>
+  <action name="importGeometry">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>listSections</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>itemChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>306</x>
+     <y>193</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>itemChanged(int)</slot>
+ </slots>
 </ui>
