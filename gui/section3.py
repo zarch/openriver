@@ -236,7 +236,8 @@ class Main(QMainWindow):
         filename = QFileDialog.getOpenFileName(self, 'Open project', '/home')
        # print filename
 
-    def on_actionImport_triggered(self,checked=None):
+#    def on_actionImport_triggered(self,checked=None):
+    def on_actionImportgeom_triggered(self,checked=None):
         if checked is None: return
         sectionsfilename = QFileDialog.getOpenFileName(self, 'Import sections.ori file', '/home')
         pointsfilename = QFileDialog.getOpenFileName(self, 'Import points.ori file', sectionsfilename)
@@ -355,7 +356,7 @@ class ViewSimulation(QMainWindow):
         self.ui.GraphicSimulation1D.setScene(self.scene)
         self.show()
         
-    def itemChanged(self, index):
+    def timeChanged(self, index):
         self.scene.clear()
         profile = self.profilesName[index]
         wsData = np.genfromtxt(profile)
