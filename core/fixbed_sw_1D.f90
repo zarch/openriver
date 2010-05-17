@@ -805,6 +805,7 @@ q(1)=qstar
   	
 
  CALL bcmonte(1,d(1),q(1),d(1))
+<<<<<<< HEAD:core/fixbed_sw_1D.f90
 
 !BUMP
 !q(1)=qstar
@@ -816,10 +817,24 @@ q(1)=qstar
 !q(1)=q(2)
 
 
+=======
+
+!BUMP
+!q(1)=qstar
+!d(1)=d(2)
+
+
+!MAUREL GOTAL
+!d(1)=d(2)
+!q(1)=q(2)
+
+
+>>>>>>> f79ed449c9a3908d20d3e4efac47dcf3f40071e3:core/fixbed_sw_1D.f90
 a(1)=depth2area(1,d(1))
 
 
  CALL bcvalle(d(nsezi),q(nsezi),nsezi)
+<<<<<<< HEAD:core/fixbed_sw_1D.f90
 
 !BUMP
 !d(nsezi)=2.0_rk
@@ -829,6 +844,17 @@ a(1)=depth2area(1,d(1))
 !d(nsezi)=d(nsezi-1)
 !q(nsezi)=q(nsezi-1)
   
+=======
+
+!BUMP
+!d(nsezi)=2.0_rk
+!q(nsezi)=q(nsezi-1)
+
+!MAUREL GOTAL
+!d(nsezi)=d(nsezi-1)
+!q(nsezi)=q(nsezi-1)
+  
+>>>>>>> f79ed449c9a3908d20d3e4efac47dcf3f40071e3:core/fixbed_sw_1D.f90
 
  a(nsezi)=depth2area(nsezi,d(nsezi))
 
