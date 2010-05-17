@@ -27,16 +27,12 @@ REAL      (kind=ik), PARAMETER   :: ct	              = 5.0_rk/3.0_rk
 REAL      (kind=ik), PARAMETER   :: ut	              = 1.0_rk/3.0_rk                 
 CHARACTER (maxc)				 :: nulla
 REAL      (kind=rk)              :: Q_input
-INTEGER   (kind=ik)              :: nn,itout,itout_sez
+INTEGER   (kind=ik)              :: nn,itout
 INTEGER   (kind=ik)				 :: controllo
 
-!file input "modeldata.ori"					        parametri simulazione
+!file input "modeldata.ori" "bcs.ori"				        parametri simulazione
 
 REAL      (kind=rk)				 :: cflcoe
-REAL      (kind=rk)				 :: dstar_m
-REAL      (kind=rk)				 :: dstar_v
-INTEGER   (kind=ik)              :: ifilein
-CHARACTER (maxc)				 :: nomesez
 INTEGER   (kind=ik)              :: pt_max
 REAL      (kind=rk)				 :: qstar,Taria_star,netsolar_star,wind_vel_star,wet_rel_star
 REAL      (kind=rk)				 :: t0
@@ -45,11 +41,10 @@ INTEGER   (kind=ik)              :: usaidr
 INTEGER   (kind=ik)              :: usaterm
 INTEGER   (kind=ik)              :: limite
 INTEGER   (kind=ik)              :: ntmaxi
-REAL      (kind=rk)              :: ks_alveo
-REAL      (kind=rk)              :: ks_isola
-REAL      (kind=rk)              :: ks_arboreo
-REAL      (kind=rk)              :: ks_erbaceo
-
+INTEGER   (kind=ik)				 :: bcs_up
+INTEGER   (kind=ik)				 :: bcs_down
+REAL      (kind=rk)				 :: level_down
+REAL      (kind=rk)				 :: level_up
 
 !caratteristiche geometriche dell'intero tratto
 CHARACTER (maxc)				 :: fiume
@@ -170,44 +165,31 @@ CLOSE(47)
 WRITE(path,'(2a)') trim(path_in),'/modeldata.ori'
 
 OPEN (UNIT=11,FILE=trim(path),STATUS='old',ACTION='read',IOSTAT=ierror)
-READ (11,'(a)')  nomesez
-READ (11,*)		ifilein
 READ (11,*)		cflcoe
 READ (11,*)		timeout
 READ (11,*)		itout
-READ (11,*)		itout_sez
-READ (11,*)		dstar_m
-READ (11,*)		dstar_v
-READ (11,*)		qstar
-READ (11,*)		usaidr
 READ (11,*)		t0
 READ (11,*)		pt_max
 READ (11,*)		limite
 READ (11,*)		ntmaxi
-READ (11,*)		ks_alveo
-READ (11,*)		ks_isola
-READ (11,*)		ks_arboreo
-READ (11,*)		ks_erbaceo
-CLOSE(UNIT=1)
+CLOSE(UNIT=11)
 
 	
-WRITE (*,*) 'nomesez =',nomesez
-WRITE (*,*)	'ifilein =',ifilein
 WRITE (*,*)	'cflcoe  =',cflcoe
 WRITE (*,*)	'timeout  =',timeout
-WRITE (*,*)	'dstar_m =',dstar_m
-WRITE (*,*)	'dstar_v =',dstar_v
-WRITE (*,*)	'qstar   =',qstar
-WRITE (*,*)	'usaidr  =',usaidr
-WRITE (*,*)	't0	     =',t0
 WRITE (*,*)	'pt_max  =',pt_max
 WRITE (*,*)	'limite =',limite
 WRITE (*,*)	'ntmaxi =',ntmaxi
-WRITE (*,*)	'ks_alveo =',ks_alveo
-WRITE (*,*)	'ks_isola  =',ks_isola
-WRITE (*,*)	'ks_arboreo =',ks_arboreo
-WRITE (*,*)	'ks_erbaceo =',ks_erbaceo
 
+WRITE(path,'(2a)') trim(path_in),'/bcs.ori'
+OPEN(unit=13,file=trim(path),status='old',action='read')
+	READ (13,*) bcs_up
+	READ (13,*) bcs_down
+	READ (13,*) level_up
+	READ (13,*) level_down
+	READ (13,*) qstar
+	READ (13,*) usaidr
+CLOSE(13)
 
 RETURN
 END SUBROUTINE reader
@@ -228,18 +210,7 @@ DO k=2,npp-1
    READ(2,*)yi(k,ji),zi(k,ji),rks(k,ji)  
    e(ji)=MIN(e(ji),zi(k,ji))  !trovo il minimo
    zfmaxi(ji)=MAX(zfmaxi(ji),zi(k,ji)) !trovo il massimo 
-   
-   ! ATTENZIONE
-   IF (rks(k,ji)==1.) THEN
-   rks(k,ji)=ks_alveo
-   ELSE IF (rks(k,ji)==3.) THEN
-   rks(k,ji)=ks_isola
-   ELSE IF (rks(k,ji)==5.) THEN
-   rks(k,ji)=ks_arboreo
-   ELSE IF (rks(k,ji)==7.) THEN
-   rks(k,ji)=ks_erbaceo
-   ENDIF
-   ! ATTENZIONE  
+  
 ENDDO
 
 
@@ -387,80 +358,6 @@ ENDDO
 
 RETURN
 END SUBROUTINE alloca
-!----------------------------------------------------------------
-SUBROUTINE letturasez
-USE comuni
-IMPLICIT NONE
-
-INTEGER (kind=ik)              :: ji,jj,j,ierror
-
-nome=TRIM(TRIM(nomesez)//".di")     ! apro il file in base alla geometria scelta
-
-OPEN (UNIT=2,FILE=nome,STATUS='old',ACTION='read',IOSTAT=ierror)
-
-READ(2,'(A)')  fiume
-READ(2,*)      indsez 
-READ(2,*)	   nscab,nsezi,idum,idum,idum
-WRITE(*,*)     "tratto considerato:",fiume
-WRITE(*,*)     "Totale sezioni da leggere:",nsezi
-
-! noto il numero delle sezioni
-
-CALL alloca
-
-
-!C  Lettura di ogni sezione
-ji=1
-DO WHILE (ji <= nsezi)
-	  
-   READ(2,*)jj   !numero della sezione oppure 0 se sez. interpolata    
-   ji2jj(ji)=jj
-   IF(jj.ne.0)THEN
-      READ(2,'(a)') noms(jj)     !nome sezione
-      READ(2,*)     jj2ji(jj)    !numero progressivo
-   ENDIF
-	   
-   READ(2,*) si(ji),nrci(ji),npi(ji),flagi(ji)
-   npi(ji)=npi(ji)+2
-   ! SEZIONE NORMALE
-   
-   IF(flagi(ji) == 0)THEN
-      CALL read_sez(ji)
-   ENDIF
-
-   ji=ji+1
-ENDDO
-CLOSE(2)
-
-
-DO j = 1,nsezi-1 
-    dx(j) = si(j+1)-si(j)
-!write(*,*) j,dx(j),si(j)
-ENDDO
-!dx(nsezi)=100000.
-!write(*,*) minval(dx),minloc(dx)
-!stop
-
-
-!C rendo gli argini molto alti per fare andare a
-!C convergenza il programma
-
-DO j = 1,nsezi  
-   yi(1,j)		= 0.0_rk
-   yi(2,j)		= yi(1,j) +1.0E-07
-   zi(1,j)		= zi(2,j) +4.0_rk
-   rks(1,j)		= rks(2,j)
-
-   yi(npi(j),j)		= yi(npi(j)-1,j)+1.0E-07
-   zi(npi(j),j)		= zi(npi(j)-1,j) +4.0_rk
-   rks(npi(j),j)	= rks(npi(j)-1,j)
-
-   zfmaxi(j)=MIN(zi(1,j),zi(npi(j),j)) 
-ENDDO
-
-
-RETURN
-END SUBROUTINE letturasez
 !----------------------------------------------------------------
 SUBROUTINE letturasez_new
 USE comuni
@@ -797,42 +694,33 @@ SUBROUTINE bcondi
      END FUNCTION depth2area
   END INTERFACE
 
+SELECT CASE (bcs_up)
+   CASE (0)
+	q(1)=qstar
+	d(1)=d(2)
+   CASE (1)
+	!C portata in ingresso calcolata dall'idrogramma
+ 	q(1)=qstar
+  	CALL bcmonte(1,d(1),q(1),d(1))
+	a(1)=depth2area(1,d(1))
+   CASE (2)
+	d(1)=level_up
+	q(1)=qstar
+END SELECT
+
+SELECT CASE (bcs_down)
+   CASE (0)
+	d(nsezi)=d(nsezi-1)
+	q(nsezi)=q(nsezi-1)
+   CASE (1)
+	CALL bcvalle(d(nsezi),q(nsezi),nsezi)
+        a(nsezi)=depth2area(nsezi,d(nsezi))
+   CASE (2)
+	d(nsezi)=level_down
+	q(nsezi)=q(nsezi-1)
+END SELECT
 
 
-!C portata in ingresso calcolata dall'idrogramma
-
-q(1)=qstar
-  	
-
- CALL bcmonte(1,d(1),q(1),d(1))
-
-!BUMP
-!q(1)=qstar
-!d(1)=d(2)
-
-
-!MAUREL GOTAL
-!d(1)=d(2)
-!q(1)=q(2)
-
-
-a(1)=depth2area(1,d(1))
-
-
- CALL bcvalle(d(nsezi),q(nsezi),nsezi)
-
-!BUMP
-!d(nsezi)=2.0_rk
-!q(nsezi)=q(nsezi-1)
-
-!MAUREL GOTAL
-!d(nsezi)=d(nsezi-1)
-!q(nsezi)=q(nsezi-1)
-  
-
- a(nsezi)=depth2area(nsezi,d(nsezi))
-
-!write(*,*) q(nsezi)
 
 RETURN
 END SUBROUTINE bcondi

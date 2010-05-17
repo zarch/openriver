@@ -1,0 +1,6 @@
+1               ! IF 0 transparent; IF 1 time-dependent UPSTREAM; IF 2 fixed level
+1               ! IF 0 transparent; IF 1 time-dependent DOWNSTREAM; IF 2 fixed level
+2.0		! upstream fixed level
+2.0		! downstream fixed level
+0.0		! qstar
+1		! usaidr

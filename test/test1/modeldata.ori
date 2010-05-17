@@ -1,16 +1,7 @@
-bump                                                !DELETE                                                      
-0						!ifilein                    
 0.9						!cflcoe
 2000 						!final time 
-1000						!itout      
-100						!itout_sez                  DELETE                  
-2.597793095166e-2				!dstar_m            DELETE
-2.597793095166e-2				!dstar_v            DELETE
+1000						!itout                      
 0.						!t0
 200						!punti max della sezione    
 5						!limite                     ADVANCED SETTING
-100000000					!ntmaxi                 DEFAULT
-100						!ks alveo                   DELETE
-100						!ks isola                   DELETE
-100						!ks arboreo 	            DELETE
-100						!ks erbaceo                 DELETE
+100000000					!ntmaxi                	    DEFAULT
