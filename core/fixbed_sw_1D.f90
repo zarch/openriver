@@ -37,7 +37,6 @@ INTEGER   (kind=ik)              :: pt_max
 REAL      (kind=rk)				 :: qstar,Taria_star,netsolar_star,wind_vel_star,wet_rel_star
 REAL      (kind=rk)				 :: t0
 REAL      (kind=rk)				 :: timeout
-INTEGER   (kind=ik)              :: usaidr
 INTEGER   (kind=ik)              :: usaterm
 INTEGER   (kind=ik)              :: limite
 INTEGER   (kind=ik)              :: ntmaxi
@@ -187,8 +186,6 @@ OPEN(unit=13,file=trim(path),status='old',action='read')
 	READ (13,*) bcs_down
 	READ (13,*) level_up
 	READ (13,*) level_down
-	READ (13,*) qstar
-	READ (13,*) usaidr
 CLOSE(13)
 
 RETURN
@@ -3432,7 +3429,7 @@ INTERFACE
    END FUNCTION dcritica
 END INTERFACE
 
-IF(usaidr==1) THEN  	
+	
    it=1
    DO WHILE((td(it)*60<=time).and.it<=idr_campi)
       it=it+1
@@ -3451,12 +3448,7 @@ IF(usaidr==1) THEN
       qaff(ji)=(Qd_aff(i,it)-Qd_aff(i,it-1))*tratio+Qd_aff(i,it-1)
 !      qaff(ji)=20.0_rk
    ENDDO
-ELSE
-   q(1) = qstar     
-   DO i=1,nsezi 
-      qaff(i)=0. 
-   ENDDO
-ENDIF
+
 !stop
 !write(*,*) qstar
 
