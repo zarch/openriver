@@ -4,25 +4,26 @@ import os as os
 class Project:
     """            This class represents the project object
     """
-    def __init__(self, name=None, simList=None,dependencyFilename=None):
-        self.projectName = name
-        self.simList = simList
+    def __init__(self, projectName=None, simList=None,dependencyFilename=None):
+        self.projectName = projectName
+        self.simList = []
         self.dependencyFilename= dependencyFilename
-        self.projectPath
-    
+        self.projectPath = None
+          
     def createProject(self,name,path):
         """ Creates a project ...
         """
         # Setting project name        
         self.projectName = name
         # Setting path to project
-        self.projectPath = path+"/"+name
+        self.projectPath = str(path+"/"+name)
         # Creating project folder
         os.mkdir(self.projectPath)
         # Default creation of first simulation
-        Simulation.createSimulation("sim0")
+        sim0 = Simulation("sim0")
+        sim0.createSimulation("sim0",self.projectPath)
         # Initializes a simulations list
-        self.simList = []
+#        self.simList = []
         # Creation of file for simulations' dependecy follow-up
         self.dependencyFilename = dependencyManager
         dePManFile = open(self.projectPath+"/depManFile","w")
@@ -44,6 +45,7 @@ class Simulation:
         # Define simulation name
         self.simName = str(name)
         # Define simulation path and create simulation directory
+        
         self.simPath = Project.projectPath+"/"+self.simName
         os.mkdir(self.simPath)
         # Append simulation to project's simulation list

@@ -231,6 +231,9 @@ class Main(QMainWindow):
             min = min if min < min0 else min0
             max = max if max > max0 else max0
         return min, max
+#######################################################################################
+####################### Definition of action events on MainWindow #####################
+#######################################################################################
 
     def on_actionOpen_triggered(self,checked=None):
         if checked is None: return
@@ -271,9 +274,12 @@ class Main(QMainWindow):
         if checked is None: return
         # Create a new project
         path = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        projectName = str(QInputDialog.getText(self, "Project Name", "Enter project name:", 0))
-        print path,projectName
-        #PM.Pro
+        projectName = str(QInputDialog.getText(self, "Project Name", "Enter project name:", 0)[0])
+        project = PM.Project(projectName)
+        project.createProject(projectName,path)
+        
+###########################################################################################
+###########################################################################################
 
 class SectionEditor(QWidget):
     def __init__(self, parent, task=None):
