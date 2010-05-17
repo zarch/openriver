@@ -23,6 +23,7 @@ import glob as glob
 import fnmatch as fnmatch
 path.append(joinpath('..','core'))
 import geometry as geo
+import projectManager as PM
 
 class SectionModel(QAbstractTableModel):
     def __init__(self, array):
@@ -265,6 +266,14 @@ class Main(QMainWindow):
         for cel in cellist:
             self.sectionModel.setData(cel, newvalue)
         self.edit.clear()
+        
+    def on_action_New_triggered(self, checked=None):
+        if checked is None: return
+        # Create a new project
+        path = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        projectName = str(QInputDialog.getText(self, "Project Name", "Enter project name:", 0))
+        print path,projectName
+        #PM.Pro
 
 class SectionEditor(QWidget):
     def __init__(self, parent, task=None):
