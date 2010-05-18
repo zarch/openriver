@@ -1712,7 +1712,7 @@ JAC(2,2) = 2.0_rk*CSmid(2)/CSmid(1)
 
 if(abs(sqrt(beta)*CSmid(2)/CSmid(1)/(sqrt(gi*CSmid(1)/bi)) -1._rk) .lt. 0.01) then
 
-write(*,*) j, nn
+!write(*,*) j, nn
 invJAC(1,1) = 0.0_rk
 invJAC(1,2) = 0.0_rk
 invJAC(2,1) = 0.0_rk
