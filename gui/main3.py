@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main3.ui'
 #
-# Created: Thu May 13 18:46:28 2010
+# Created: Mon May 17 14:34:08 2010
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,27 +37,27 @@ class Ui_MainWindow(object):
         self.interpolateGeom = QtGui.QPushButton(self.geometry)
         self.interpolateGeom.setGeometry(QtCore.QRect(340, 0, 101, 31))
         self.interpolateGeom.setObjectName("interpolateGeom")
-        self.widget = QtGui.QWidget(self.geometry)
-        self.widget.setGeometry(QtCore.QRect(11, 32, 611, 461))
-        self.widget.setObjectName("widget")
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.widget)
+        self.layoutWidget = QtGui.QWidget(self.geometry)
+        self.layoutWidget.setGeometry(QtCore.QRect(11, 32, 611, 461))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.layoutWidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.listSections = QtGui.QListWidget(self.widget)
+        self.listSections = QtGui.QListWidget(self.layoutWidget)
         self.listSections.setObjectName("listSections")
         self.horizontalLayout.addWidget(self.listSections)
         self.verticalLayout = QtGui.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
-        self.tableSectionCoord = QtGui.QTableView(self.widget)
+        self.tableSectionCoord = QtGui.QTableView(self.layoutWidget)
         self.tableSectionCoord.setObjectName("tableSectionCoord")
         self.verticalLayout.addWidget(self.tableSectionCoord)
-        self.lineTabEdit = QtGui.QLineEdit(self.widget)
+        self.lineTabEdit = QtGui.QLineEdit(self.layoutWidget)
         self.lineTabEdit.setObjectName("lineTabEdit")
         self.verticalLayout.addWidget(self.lineTabEdit)
         self.horizontalLayout.addLayout(self.verticalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
-        self.sectionGraphics = QtGui.QGraphicsView(self.widget)
+        self.sectionGraphics = QtGui.QGraphicsView(self.layoutWidget)
         self.sectionGraphics.setObjectName("sectionGraphics")
         self.verticalLayout_2.addWidget(self.sectionGraphics)
         self.Tabs.addTab(self.geometry, "")
@@ -149,7 +149,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuProject.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.Tabs.setCurrentIndex(4)
+        self.Tabs.setCurrentIndex(0)
         QtCore.QObject.connect(self.importGeom, QtCore.SIGNAL("clicked()"), self.actionImportgeom.trigger)
         QtCore.QObject.connect(self.listSections, QtCore.SIGNAL("currentRowChanged(int)"), MainWindow.itemChanged)
         QtCore.QObject.connect(self.runSimulation, QtCore.SIGNAL("clicked()"), self.actionRun.trigger)

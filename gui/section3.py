@@ -123,7 +123,7 @@ class Main(QMainWindow):
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
         
-    def showall(self):
+    def showGeometry(self):
         # populate the list section
         listsect = []
         for s in self.sezlist:
@@ -142,6 +142,7 @@ class Main(QMainWindow):
         self.ksmin, self.ksmax = self.minmax_ks()
         # define how section line should be draw
         self.kslinestyle = 'color:width:dash' # 'color:width:dash:zigzag'
+        print "done"
 
     def itemChanged(self, index):
         sect = self.sezlist[index]
@@ -243,12 +244,17 @@ class Main(QMainWindow):
 #    def on_actionImport_triggered(self,checked=None):
     def on_actionImportgeom_triggered(self,checked=None):
         if checked is None: return
+        # Get path to geometry files to be imported
         sectionsfilename = QFileDialog.getOpenFileName(self, 'Import sections.ori file', '/home')
         pointsfilename = QFileDialog.getOpenFileName(self, 'Import points.ori file', sectionsfilename)
+        # Copy files into simulation geometry folder
+        self.project.simList[0].importGeometry(str(sectionsfilename), str(pointsfilename))
+        # Declare reach and populate it with geometry for visualization/editing purpouses
         river = geo.Reach()
-        river.importFileOri(sectionsfilename, pointsfilename)
+        river.importFileOri(self.project.simList[0].sectionsName,self.project.simList[0].pointsName)
         self.sezlist = river.sections
-        self.showall()
+        # Call the method that displays geometry
+        self.showGeometry()
 
     def on_actionRun_triggered(self,checked=None):
         if checked is None: return
@@ -275,8 +281,10 @@ class Main(QMainWindow):
         # Create a new project
         path = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
         projectName = str(QInputDialog.getText(self, "Project Name", "Enter project name:", 0)[0])
-        project = PM.Project(projectName)
-        project.createProject(projectName,path)
+        self.project = PM.Project(projectName)
+        self.project.createProject(projectName,path)
+        
+        
         
 ###########################################################################################
 ###########################################################################################
