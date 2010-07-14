@@ -34,6 +34,7 @@ class SectionModel(QAbstractTableModel):
         return len(self.array)
 
     def columnCount(self, parent=QModelIndex()):
+        print self.array
         return max(map(len, self.array))
 
     def data(self, index, role=Qt.DisplayRole):
@@ -62,8 +63,15 @@ class SectionModel(QAbstractTableModel):
                 return QVariant(sections[col])
             elif orientation == Qt.Vertical:
                 #return QVariant(col + 1)
-                return super(SectionModel, self).headerData(col, orientation, role)
+                return super(SectionModel, self).headerData(col, orientation, 
+                                                            role)
         return QVariant()
+        
+    def update(self, row, point):
+        y = self.index(row, 1)
+        z = self.index(row, 2)
+        self.setData(y, QVariant(point.x()))
+        self.setData(z, QVariant(point.y()))
 
     # Models that provide interfaces to resizable data structures can provide
     # implementations of insertRows(), removeRows(), insertColumns(), and
@@ -87,11 +95,14 @@ class SectionModel(QAbstractTableModel):
     # http://doc.trolltech.com/4.6/qabstracttablemodel.html
 
 class SectionPoint(QGraphicsEllipseItem):
+    pointMoved = pyqtSignal((int, QPointF))
+    
     def __init__(self, window, index=None, data=None, point=None):
         self.window = window
         self.row = index
         self.data = data
-        r = 5
+        self.r = 5
+        self.movedFromCode = False
         #print 'data:',  self.data
         if not data==None:
             x, y, z, ks = self.data
@@ -100,25 +111,50 @@ class SectionPoint(QGraphicsEllipseItem):
             self.point = point
         #print self.point.x(), self.point.y()
         
-        self.bbox = QRectF(self.point.x()-r, -self.point.y()+r, 2*r, 2*r)
+        #self.bbox = QRectF(self.point.x()-self.r, -self.point.y()+self.r, 
+        #                   2*self.r, 2*self.r)
 
-        super(SectionPoint, self).__init__(self.bbox)
-        self.setBrush(QBrush(QColor(0, 0, 150)))
+        super(SectionPoint, self).__init__()
+        #self.setBrush(QBrush(QColor(0, 0, 150)))
         self.setFlag(QGraphicsItem.ItemIsSelectable)
+        # TODO: if checkbox selected, points should be movable (to be added to 
+        # the GUI
+        self.setFlag(QGraphicsItem.ItemIsMovable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag(0x800)) # ItemSendsGeometry
+                                                            # Changes
+        
 
     def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemSelectedChange:
+        if change == super(SectionPoint, self).ItemSelectedChange:
+        #if change == QGraphicsItem.ItemSelectedChange:
             self.window.ui.tableSectionCoord.selectRow(self.row)
         return super(SectionPoint, self).itemChange(change, value)
+    def shape(self):
+        path = QPainterPath()
+        path.addEllipse(self.boundingRect())
+        return path
 
+    def boundingRect(self):
+        bbox = QRectF(-self.r, -self.r, 2*self.r, 2*self.r)
+        return bbox
+
+    def paint(self, painter, option, widget=0):
+        painter.setPen(Qt.black)
+        painter.setBrush(Qt.blue)
+        painter.drawRoundedRect(self.boundingRect(), 5, 5)
+
+    def mouseMoveEvent(self, event):
+        if not self.movedFromCode:
+            #print "moving to ", self.pos(), self.row, event.scenePos(), event.pos()
+            self.pointMoved.emit(self.row, event.scenePos())
+        self.movedFromCode = False
+        return super(SectionPoint, self).mouseMoveEvent(event)
 # Create a class for our main window
 class Main(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        
-        
         #self.sezlist = sezlist
-
+        self.sectionModel = None        
         # This is always the same
         self.ui=Ui_MainWindow()
         self.ui.setupUi(self)
@@ -146,12 +182,18 @@ class Main(QMainWindow):
 
     def itemChanged(self, index):
         sect = self.sezlist[index]
-        coord = sect.data
+        #coord = sect.data
+        coord = sect.data #[sect.first:-sect.last]
+        
+        if self.sectionModel is SectionModel:
+            self.disconnect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
+
         self.sectionModel = SectionModel(coord)
         self.ui.tableSectionCoord.setModel(self.sectionModel)
 
         self.connect(self.sectionModel, SIGNAL("dataChanged(QModelIndex, QModelIndex)"), self.dataModelChanged)
-        self.drawSection(coord)
+        #self.drawSection(coord)
+        self.drawSection(self.sectionModel.array)
 
     def dataModelChanged(self, index, index2):
         self.drawSection(self.sectionModel.array)
@@ -180,7 +222,6 @@ class Main(QMainWindow):
                 cl = i
         #print 'cl is:', cl
         return cl
-
     def getColorStyle(self, ks, pen):
         # Fraction to choose color and line 'color:width:dash:zigzag'
         r = (ks - self.ksmin)/(self.ksmax - self.ksmin)
@@ -199,27 +240,54 @@ class Main(QMainWindow):
                          4 : Qt.DotLine}
             pen.setStyle(dashstyle[4-cl])
         return pen
-
+    def graphPointMoved(self, row, point):
+        self.sectionModel.update(row, point)
+        
     def drawSection(self, array):
-        self.scene.clear()
-        r = 5
-        i = 0
-        pen = QPen(QColor(0, 0, 0))
-        # initialize first point
-        pnt0 = SectionPoint(self, index=i, data=array[0])
-        # get firs ks
-        x, y, z, ks = array[0]
-        self.scene.addItem(pnt0)
-        for data in array[1:]:
-            i += 1
-            pnt1 = SectionPoint(self, index=i, data=data)
-            # change pen property
-            pen0 = self.getColorStyle(ks, pen)
-            self.scene.addItem(pnt1)
-            self.scene.addLine(QLineF(pnt0.point, pnt1.point), pen0)
-            #print pnt0.point,pnt1.point
-            pnt0 = pnt1
-            x, y, z, ks = data
+        done = []
+        print 'ok'
+        for w in self.scene.items():
+            if isinstance(w, SectionPoint):
+                row = self.sectionModel.array[w.row]
+                #print "%s =? %s" % ( w.pos(), QPointF(row[1], row[2]))
+                if w.pos() != QPointF(row[1], row[2]):
+                    w.movedFromCode = True
+                    w.setPos(row[1], row[2])
+                done.append(w)
+            else:
+                self.scene.removeItem(w)
+
+        if done:
+            # redraw segments
+            p0 = done[0]
+            x, y, z, ks = p0.data
+            pen = QPen(QColor(0, 0, 0))
+            for p in done:
+                pen0 = self.getColorStyle(ks, pen)
+                self.scene.addLine(QLineF(p0.pos(), p.pos()), pen0)
+                p0 = p
+                x, y, z, ks = p.data
+        else:
+           # WRONG: this should be fixed! It could be possible to add new points
+           # so i != 0
+            i = 0
+            pen = QPen(QColor(0, 0, 0))
+            print 'array[0]=',array[0]
+            pnt0 = SectionPoint(self, i, array[0])
+            self.connect(pnt0, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+            x, y, z, ks = array[0]
+            self.scene.addItem(pnt0)
+            for data in array[1:]:
+                i += 1
+                pnt1 = SectionPoint(self, i, data)
+                self.connect(pnt1, SIGNAL("pointMoved(int, QPointF)"), self.graphPointMoved)
+
+                # change pen property
+                pen0 = self.getColorStyle(ks, pen)
+                self.scene.addLine(QLineF(pnt0.pos(), pnt1.pos()), pen0)
+                self.scene.addItem(pnt1)
+                pnt0 = pnt1
+                x, y, z, ks = data
 
     def minmax_ks(self):
         """Return min and max of ks looking from all sections"""
