@@ -1,4 +1,3 @@
-import geometry as geom
 import shutil as shutil
 import os as os
 from os.path import join as joinpath
